@@ -1,0 +1,15 @@
+@use '../../../../shared/styles/auth-forms' as *;
+
+.form-container {
+  @extend .auth-form-container;
+}
+
+re-captcha {
+  display: block;
+  margin: 16px 0;
+}
+
+mat-progress-bar {
+  height: 6px;
+  margin-top: 8px;
+}

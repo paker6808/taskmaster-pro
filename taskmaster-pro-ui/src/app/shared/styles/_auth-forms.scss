@@ -1,0 +1,133 @@
+.auth-form-container {
+  max-width: 420px;
+  margin: 80px auto;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 28px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #d35400;
+  }
+
+  .custom-form-field {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .mat-error {
+    color: #a00000;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: 4px;
+  }
+
+  .mat-hint {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: -8px;
+    margin-bottom: 12px;
+  }
+
+  .links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    font-size: 0.9rem;
+    width: 100%;
+
+    a {
+      color: #3f51b5;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .custom-auth-button {
+    width: 100%;
+    height: 42px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 10px;
+    color: #fff;
+    background-color: #d35400;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    border: none;
+
+    &:hover {
+      background-color: #bf4600
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  .custom-secondary-auth-button {
+    width: 100%;
+    height: 42px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 8px;
+    background: transparent;
+    color: #d35400;
+    border: 2px solid #d35400;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    &:hover {
+      background-color: #d35400;
+      color: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@media (min-width: 600px) {
+   .auth-form-container.single-action .custom-auth-button {
+    width: 50%;
+    margin: 20px auto 0;
+  }
+
+  .auth-form-container.single-action .links {
+    justify-content: space-between;
+  }
+
+  .auth-form-container form {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .auth-form-container .custom-auth-button,
+  .auth-form-container .custom-secondary-auth-button {
+    width: calc(50% - 8px);
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-form-container {
+    margin-block: 80px;
+    margin-inline: 16px;
+  }
+}

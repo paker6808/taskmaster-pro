@@ -1,0 +1,61 @@
+<div class="order-detail-container" *ngIf="order; else loading">
+  <div class="detail-header">
+    <h2 class="detail-title">Order #{{ order.id }}</h2>
+    <div class="meta">
+      <small class="id">ID: <span class="mono">{{ order.id }}</span>
+        <button mat-icon-button (click)="copyId()" matTooltip="Copy ID">
+          <mat-icon>content_copy</mat-icon>
+        </button>   
+      </small>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <button mat-stroked-button color="primary" (click)="backToOrders()">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Orders
+    </button>
+  </div>
+
+  <mat-card class="detail-card">
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <p><strong>Customer:</strong> {{ order.customerName }}</p>
+          <p><strong>Order Date:</strong> {{ order.orderDate | date: 'medium' }}</p>
+          <p>
+            <strong>Status:</strong>
+            <span [ngClass]="{
+              'status-new': order.status === 'New',
+              'status-processing': order.status === 'Processing',
+              'status-completed': order.status === 'Completed',
+              'status-cancelled': order.status === 'Cancelled'
+            }">
+              {{ order.status }}
+            </span>
+          </p>
+          <p><strong>Total:</strong> {{ order.totalAmount | number:'1.2-2':'de' }}</p>
+        </div>
+
+        <div class="col">
+          <h3>Audit</h3>
+          <p><strong>Created:</strong> {{ order.created | date: 'medium' }}
+             by {{ order.createdBy?.fullName ?? '—' }}
+             ({{ order.createdBy?.email  ?? '—' }})
+          </p>
+          <p *ngIf="order.updated">
+            <strong>Updated:</strong> {{ order.updated | date: 'medium' }}
+              by {{ order.updatedBy?.fullName ?? '—' }}
+              ({{ order.updatedBy?.email ?? '—' }})
+          </p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<ng-template #loading>
+  <div class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+</ng-template>

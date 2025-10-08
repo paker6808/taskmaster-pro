@@ -1,0 +1,53 @@
+@use '../../../shared/styles/admin-detail-pages';
+
+.user-detail-container {
+  @extend .admin-detail-container;
+
+  .success-icon {
+    color: #4caf50;
+  }
+
+  .error-icon {
+    color: #f44336;
+  }
+
+  .roles {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    mat-chip {
+      cursor: default;
+      pointer-events: none;
+      color: #333;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      padding: 0 10px;
+
+      &:hover {
+        background-color: #e0e0e0 !important;
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 12px;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    button {
+      margin-right: 0;
+    }
+  }
+
+  .locked-out {
+    color: #f44336;
+    font-weight: bold;
+    margin-left: 0.5rem;
+  }
+}

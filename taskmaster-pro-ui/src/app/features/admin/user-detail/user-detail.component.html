@@ -1,0 +1,74 @@
+<div class="user-detail-container" *ngIf="user; else loading">
+  <div class="detail-header">
+    <h2 class="detail-title">{{ user.fullName || user.userName }}</h2>
+    <div class="meta">
+      <small class="id">ID: <span class="mono">{{ user.id }}</span>
+        <button mat-icon-button (click)="copyId()" matTooltip="Copy ID">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </small>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <button mat-stroked-button color="primary" (click)="backToAdminUsers()">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Users
+    </button>
+  </div>
+
+  <mat-card class="detail-card">
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <p><strong>Username:</strong> {{ user.userName }}</p>
+          <p>
+            <strong>Email:</strong>
+            {{ user.email }}
+            <mat-icon class="small success-icon" *ngIf="user.emailConfirmed" aria-hidden="true">check_circle</mat-icon>
+            <mat-icon class="small error-icon" *ngIf="!user.emailConfirmed" aria-hidden="true">error</mat-icon>
+            <span class="muted">({{ user.emailConfirmed ? 'Confirmed' : 'Not confirmed' }})</span>
+          </p>
+          <p><strong>Security question:</strong> {{ user.securityQuestion || '—' }}</p>
+          <p>
+            <strong>Failed question attempts:</strong> {{ user.failedSecurityQuestionAttempts ?? 0 }}
+            <span *ngIf="user.lockoutEndMinutesRemaining" class="locked-out">
+              <mat-icon class="small error-icon" aria-hidden="true">error</mat-icon>
+              Locked out: {{ user.lockoutEndMinutesRemaining | number:'1.0-0' }} min remaining
+            </span>
+          </p>
+        </div>
+
+        <div class="col">
+          <p><strong>Roles:</strong></p>
+          <div class="roles">
+           <mat-chip *ngFor="let r of user.roles" 
+            color="primary" 
+            selected="true" 
+            selectable="false" 
+            removable="false" 
+            [disableRipple]="true">
+            {{ r }}
+          </mat-chip>
+          </div>
+
+          <!-- optional admin actions -->
+          <div class="actions" style="margin-top: 12px;">
+            <button mat-stroked-button color="primary" (click)="openEditRoles()" *ngIf="canEdit">
+              Edit roles
+            </button>
+            <button mat-stroked-button color="warn" (click)="resetSecurityAttempts()" *ngIf="canEdit">
+              Reset failed attempts
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<ng-template #loading>
+  <div class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+</ng-template>

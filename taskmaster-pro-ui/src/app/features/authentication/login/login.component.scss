@@ -1,0 +1,15 @@
+@use '../../../shared/styles/auth-forms' as *;
+
+.login-container {
+  @extend .auth-form-container;
+}
+
+/* Chrome, Edge, Safari */
+.password-masked {
+  -webkit-text-security: disc;
+}
+
+/* Firefox fallback */
+.password-masked {
+  font-family: text-security-disc;
+}

@@ -1,0 +1,31 @@
+﻿global using AutoMapper;
+global using FluentValidation;
+global using FluentValidation.Results;
+global using MediatR;
+global using Microsoft.Extensions.DependencyInjection;
+
+global using taskmaster_pro.Application.Behaviours;
+global using taskmaster_pro.Application.Exceptions;
+global using taskmaster_pro.Application.Features.Orders.Commands.CreateOrder;
+global using taskmaster_pro.Application.Features.Orders.Commands.UpdateOrder;
+global using taskmaster_pro.Application.Features.Orders.Commands.DeleteOrder;
+global using taskmaster_pro.Application.Features.Orders.Queries.GetOrders;
+global using taskmaster_pro.Application.Features.Schedules.Commands.CreateSchedule;
+global using taskmaster_pro.Application.Features.Schedules.Commands.UpdateSchedule;
+global using taskmaster_pro.Application.Features.Schedules.Commands.DeleteSchedule;
+global using taskmaster_pro.Application.Features.Schedules.Queries.GetSchedules;
+global using taskmaster_pro.Application.Helpers;
+global using taskmaster_pro.Application.Interfaces;
+global using taskmaster_pro.Application.Interfaces.Repositories;
+global using taskmaster_pro.Application.Parameters;
+global using taskmaster_pro.Application.Wrappers;
+global using taskmaster_pro.Domain.Entities;
+global using taskmaster_pro.Domain.Enums;
+
+global using System;
+global using System.Collections.Generic;
+global using System.Globalization;
+global using System.Linq;
+global using System.Reflection;
+global using System.Threading;
+global using System.Threading.Tasks;

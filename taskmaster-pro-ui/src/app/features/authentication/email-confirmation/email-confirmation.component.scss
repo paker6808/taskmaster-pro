@@ -1,0 +1,11 @@
+@use '../../../shared/styles/auth-forms' as *;
+
+.confirmation-container {
+  @extend .auth-form-container;
+
+   .confirmation-text {
+    color: #444;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}

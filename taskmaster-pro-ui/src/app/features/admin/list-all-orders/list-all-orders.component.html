@@ -1,0 +1,104 @@
+<div class="list-all-orders-container">
+  <div class="header-row">
+    <h2>All Orders</h2>
+
+    <!-- Buttons container -->
+    <div class="header-actions ">
+      <!-- Export buttons -->
+      <button mat-flat-button color="primary" (click)="exportOrdersExcel()">
+        <mat-icon>file_download</mat-icon>
+        Export Excel
+      </button>
+      <button mat-flat-button color="primary" (click)="exportOrdersCSV()">
+        <mat-icon>file_download</mat-icon>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <table
+    mat-table
+    [dataSource]="orders"
+    matSort
+    (matSortChange)="onSortChange($event)"
+    class="mat-elevation-z8"
+    [hidden]="isLoading">
+  >
+    <!-- ID -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let o">
+        {{ o.id }}
+        <button mat-icon-button color="primary" (click)="copyId(o.id)" matTooltip="Copy ID">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Customer Name -->
+    <ng-container matColumnDef="customerName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
+      <td mat-cell *matCellDef="let o">{{ o.customerName }}</td>
+    </ng-container>
+
+    <!-- Order Date -->
+    <ng-container matColumnDef="orderDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+      <td mat-cell *matCellDef="let o">{{ o.orderDate | date:'mediumDate' }}</td>
+    </ng-container>
+
+    <!-- Status -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let o">{{ o.status }}</td>
+    </ng-container>
+
+    <!-- Total Amount -->
+    <ng-container matColumnDef="totalAmount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+      <td mat-cell *matCellDef="let o">{{ o.totalAmount | number:'1.2-2':'de' }}</td>
+    </ng-container>
+
+    <!-- User -->
+    <ng-container matColumnDef="userEmail">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>User Email</th>
+      <td mat-cell *matCellDef="let o">{{ o.userEmail }}</td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let o">
+        <button mat-icon-button color="accent" (click)="viewOrder(o.id)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteOrder(o.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" (click)="createScheduleFor(o.id)" matTooltip="Create schedule for this order">
+          <mat-icon>add</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator
+    [length]="totalRecords"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    (page)="onPageChange($event)"
+    [pageSizeOptions]="pageSizeOptions"
+    [hidden]="isLoading"
+  ></mat-paginator>
+
+  <div *ngIf="!isLoading && orders.length === 0" class="no-data">
+    No orders to display.
+  </div>
+</div>

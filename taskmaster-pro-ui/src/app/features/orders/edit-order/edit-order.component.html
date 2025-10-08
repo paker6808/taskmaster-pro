@@ -1,0 +1,55 @@
+<mat-card class="edit-form-card">
+  <mat-card-title>Edit Order</mat-card-title>
+  <mat-card-content>
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Customer Name</mat-label>
+        <input matInput formControlName="customerName" placeholder="e.g. ACME Corp." />
+        <mat-error *ngIf="editForm.get('customerName')?.hasError('required')">
+          Customer name is required
+        </mat-error>
+        <mat-error *ngIf="editForm.get('customerName')?.hasError('maxlength')">
+          Max length is 100 characters
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Order Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="orderDate" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="editForm.get('orderDate')?.hasError('required')">
+          Order date is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let s of orderStatuses" [value]="s">
+            {{ s }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="editForm.get('status')?.hasError('required')">
+          Status is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Total Amount</mat-label>
+        <input matInput type="number" formControlName="totalAmount" />
+        <mat-error *ngIf="editForm.get('totalAmount')?.hasError('required')">
+          Total amount is required
+        </mat-error>
+        <mat-error *ngIf="editForm.get('totalAmount')?.hasError('min')">
+          Must be at least 0.01
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">Save Changes</button>
+        <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

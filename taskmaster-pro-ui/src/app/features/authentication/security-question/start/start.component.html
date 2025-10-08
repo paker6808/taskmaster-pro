@@ -1,0 +1,46 @@
+<div class="form-container">
+  <h2>Enter Your Email</h2>
+
+  <form [formGroup]="emailForm" (ngSubmit)="loadQuestion()">
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" required autocomplete="email" />
+      <mat-error *ngIf="email.hasError('required')">
+        Email is required.
+      </mat-error>
+      <mat-error *ngIf="email.hasError('email')">
+        Please enter a valid email.
+      </mat-error>
+      <mat-error *ngIf="email.hasError('maxlength')">
+        Email cannot be more than 254 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <re-captcha
+      #captchaRef
+      siteKey="6Ld2Sn4rAAAAAAV0mHtku7lKdrXrXbZSlEd1aA0q"
+      (resolved)="onCaptchaResolved($event)"
+      (expired)="onCaptchaExpired()">
+    </re-captcha>
+    <mat-error *ngIf="recaptchaError">
+      Please complete the CAPTCHA.
+    </mat-error>
+
+    <button
+      class="custom-auth-button"
+      color="primary"
+      type="submit"
+      [disabled]="emailForm.invalid || !captchaResolved  || loading">
+      Next
+    </button>
+
+    <button
+      class="custom-secondary-auth-button"
+      type="button"
+      (click)="cancel()">
+      Cancel
+    </button>
+
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+  </form>
+</div>

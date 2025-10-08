@@ -1,0 +1,33 @@
+<div class="login-container single-action">
+  <h2>Login</h2>
+  <form [formGroup]="loginForm" (ngSubmit)="submit()">
+    <mat-form-field class="custom-form-field" appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+      <mat-error *ngIf="loginForm.get('email')?.invalid">Valid email required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="custom-form-field" appearance="fill">
+      <mat-label>Password</mat-label>
+      <input matInput type="text" formControlName="password" [class.password-masked]="hidePassword" />
+      <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        tabindex="-1"
+        (mousedown)="$event.preventDefault();"
+        (click)="$event.preventDefault(); hidePassword = !hidePassword"
+      >
+        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="loginForm.get('password')?.invalid">Password required (min 8 characters)</mat-error>
+    </mat-form-field>
+
+    <button class="custom-auth-button" type="submit" [disabled]="loginForm.invalid">Login</button>
+
+    <div class="links">
+      <a routerLink="/forgot-password">Forgot Password?</a>
+      <a routerLink="/register">Create an Account</a>
+    </div>
+  </form>
+</div>

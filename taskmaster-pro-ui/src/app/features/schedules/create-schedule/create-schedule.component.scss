@@ -1,0 +1,28 @@
+.form-card {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+    color: #fff;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background: #2c2c2c;
+  }
+  
+  ::ng-deep .mat-input-element, ::ng-deep .mat-select-value-text {
+    color: #fff;
+  }

@@ -1,0 +1,56 @@
+<div class="schedule-detail-container" *ngIf="schedule; else loading">
+  <div class="detail-header">
+    <h2 class="detail-title">Schedule #{{ schedule.id }}</h2>
+    <div class="meta">
+      <small class="id">ID: <span class="mono">{{ schedule.id }}</span>
+        <button mat-icon-button (click)="copyId()" matTooltip="Copy ID">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </small>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <button mat-stroked-button color="primary" (click)="backToSchedules()">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Schedules
+    </button>
+  </div>
+
+  <mat-card class="detail-card">
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <p><strong>Order ID:</strong> {{ schedule.orderId }}</p>
+          <p><strong>Title:</strong> {{ schedule.title }}</p>
+          <p><strong>Scheduled Start:</strong> {{ schedule.scheduledStart | date: 'medium' }}</p>
+          <p><strong>Scheduled End:</strong> {{ schedule.scheduledEnd | date: 'medium' }}</p>
+          <p><strong>Assigned To:</strong>
+             {{ schedule.assignedTo?.fullName ?? '—' }}
+             ({{ schedule.assignedTo?.email  ?? '—' }})
+          </p>
+          <p><strong>Description:</strong> {{ schedule.description }}</p>
+        </div>
+
+        <div class="col">
+          <h3>Audit</h3>
+          <p><strong>Created:</strong> {{ schedule.created | date: 'medium' }}
+             by {{ schedule.createdBy?.fullName ?? '—' }}
+             ({{ schedule.createdBy?.email  ?? '—' }})
+          </p>
+          <p *ngIf="schedule.updated">
+            <strong>Updated:</strong> {{ schedule.updated | date: 'medium' }}
+              by {{ schedule.updatedBy?.fullName ?? '—' }}
+              ({{ schedule.updatedBy?.email ?? '—' }})
+          </p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<ng-template #loading>
+  <div class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+</ng-template>

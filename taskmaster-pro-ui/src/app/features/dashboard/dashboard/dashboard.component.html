@@ -1,0 +1,47 @@
+<div class="dashboard" [@staggerFadeIn]>
+  <div class="dashboard-header">
+    <h2>Dashboard</h2>
+    <p class="subtitle">Overview — quick stats & monthly activity</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-spinner" aria-busy="true">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <div *ngIf="!isLoading" class="cards-grid">
+    <mat-card class="glass-card stat-card">
+      <mat-card-title>Total Orders</mat-card-title>
+      <mat-card-content>
+        <div class="stat-value">{{ totalOrders }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="glass-card stat-card">
+      <mat-card-title>Total Schedules</mat-card-title>
+      <mat-card-content>
+        <div class="stat-value">{{ totalSchedules }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="glass-card stat-card" *ngIf="totalUsers > 0">
+      <mat-card-title>Total Users (Confirmed)</mat-card-title>
+      <mat-card-content>
+        <div class="stat-value">{{ totalUsers }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="glass-card chart-card">
+      <mat-card-title>
+        Orders & Schedules This Year
+        <small class="chart-range"> (Jan–{{ barChartLabels.length ? barChartLabels[barChartLabels.length - 1] : '—' }})</small>
+      </mat-card-title>
+      <mat-card-content>
+        <canvas baseChart
+                [data]="barChartData"
+                [options]="barChartOptions"
+                [type]="barChartType">
+        </canvas>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

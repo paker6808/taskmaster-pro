@@ -1,0 +1,140 @@
+<div class="form-container">
+  <h2>Register</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="submit()">
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="firstName" required>
+      <mat-error *ngIf="firstName.invalid">
+        First name is required
+      </mat-error>
+      <mat-error *ngIf="firstName.hasError('maxlength')">
+        First name cannot be more than 100 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="lastName" required>
+      <mat-error *ngIf="lastName.invalid">
+        Last name is required
+      </mat-error>
+      <mat-error *ngIf="lastName.hasError('maxlength')">
+        Last name cannot be more than 100 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" required>
+      <mat-error *ngIf="email.hasError('required')">
+        Email is required.
+      </mat-error>
+      <mat-error *ngIf="email.hasError('email')">
+        Please enter a valid email.
+      </mat-error>
+      <mat-error *ngIf="email.hasError('maxlength')">
+        Email cannot be more than 254 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>Password</mat-label>
+      <input matInput type="text" formControlName="password" [class.password-masked]="hidePassword" required />
+      <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        tabindex="-1"
+        (mousedown)="$event.preventDefault();"
+        (click)="$event.preventDefault(); hidePassword = !hidePassword"
+      >
+        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="password.hasError('required')">
+        Password is required
+      </mat-error>
+      <mat-error *ngIf="password.hasError('minlength')">
+        Password must be at least 8 characters
+      </mat-error>
+      <mat-error *ngIf="password.hasError('pattern')">
+        Must contain at least one uppercase letter, one lowercase letter, and one number
+      </mat-error>
+
+      <mat-progress-bar
+        [value]="passwordStrength" 
+        mode="determinate"
+        [color]="
+          passwordStrength < 40  ? 'warn' :
+          passwordStrength < 60  ? 'accent' :
+          passwordStrength < 80  ? 'primary' :
+                                  'primary'
+        ">
+      </mat-progress-bar>
+
+      <div class="password-strength-label" 
+          [ngClass]="{
+            'weak': passwordStrength < 40,
+            'medium': passwordStrength >= 40 && passwordStrength < 60,
+            'strong': passwordStrength >= 60 && passwordStrength < 80,
+            'very-strong': passwordStrength >= 80
+          }">
+        {{ passwordStrengthLabel }}
+      </div>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>Confirm Password</mat-label>
+      <input matInput type="text" formControlName="confirmPassword" [class.password-masked]="hideConfirmPassword" required />
+      <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        tabindex="-1"
+        (mousedown)="$event.preventDefault()"
+        (click)="$event.preventDefault(); hideConfirmPassword = !hideConfirmPassword"
+      >
+        <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="confirmPassword.hasError('required')">
+        Confirmation is required
+      </mat-error>
+      <mat-error *ngIf="confirmPassword.hasError('mismatch')">
+        Passwords do not match
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>Security Question</mat-label>
+       <mat-select formControlName="securityQuestion" required>
+        <mat-option *ngFor="let q of securityQuestions" [value]="q">
+          {{ q }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="securityQuestion.invalid">
+        Please select a security question
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>Security Answer</mat-label>
+      <input matInput formControlName="securityAnswer" required>
+      <mat-error *ngIf="securityAnswer.hasError('required')">
+        Security answer is required
+      </mat-error>
+      <mat-error *ngIf="securityAnswer.hasError('minlength')">
+        Answer must be at least {{ securityAnswer.errors?.['minlength']?.requiredLength }} characters
+      </mat-error>
+      <mat-error *ngIf="securityAnswer.hasError('maxlength')">
+        Answer cannot exceed {{ securityAnswer.errors?.['maxlength']?.requiredLength }} characters
+      </mat-error>
+    </mat-form-field>
+
+    <re-captcha formControlName="recaptchaToken" siteKey="6Ld2Sn4rAAAAAAV0mHtku7lKdrXrXbZSlEd1aA0q" (resolved)="onCaptchaResolved($event)"></re-captcha>
+    <mat-error *ngIf="recaptcha.invalid && recaptcha.touched">
+      Please complete the CAPTCHA
+    </mat-error>
+
+    <button class="custom-auth-button" color="primary" type="submit" [disabled]="registerForm.invalid">Register</button>
+    <button class="custom-secondary-auth-button" type="button" (click)="cancel()">Cancel</button>
+  </form>
+</div>

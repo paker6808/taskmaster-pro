@@ -1,0 +1,44 @@
+.admin-detail-container {
+  padding: 1rem;
+
+  .detail-header {
+    margin-bottom: 1rem;
+
+    .detail-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .id {
+      font-size: 0.8rem;
+      color: var(--mat-grey-500);
+      font-family: monospace;
+    }
+  }
+
+  .detail-card {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 1rem;
+
+    p {
+      margin: 0.4rem 0;
+    }
+  }
+
+  mat-card {
+    margin-top: 1rem;
+    padding: 1rem;
+
+    mat-card-content p {
+      margin: 0.5rem 0;
+    }
+  }
+
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+}

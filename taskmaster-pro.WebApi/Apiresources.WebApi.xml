@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+	<assembly>
+		<name>taskmaster_pro.WebApi</name>
+	</assembly>
+	<members>
+		<!-- OrdersController -->
+		<member name="M:taskmaster_pro.WebApi.Controllers.v1.OrdersController.Create(taskmaster_pro.Application.DTOs.Order.CreateOrderDto)">
+			<summary>
+				POST api/v1/orders
+			</summary>
+			<param name="dto">The order data.</param>
+			<returns>201 Created with the new Order ID.</returns>
+		</member>
+		<member name="M:taskmaster_pro.WebApi.Controllers.v1.OrdersController.GetAll">
+			<summary>
+				GET api/v1/orders
+			</summary>
+			<returns>All orders.</returns>
+		</member>
+		<member name="M:taskmaster_pro.WebApi.Controllers.v1.OrdersController.Get(System.Int32)">
+			<summary>
+				GET api/v1/orders/{id}
+			</summary>
+			<param name="id">The ID of the order.</param>
+			<returns>The order with the specified ID.</returns>
+		</member>
+
+		<!-- SchedulesController -->
+		<member name="M:taskmaster_pro.WebApi.Controllers.v1.SchedulesController.Create(taskmaster_pro.Application.DTOs.Schedule.CreateScheduleDto)">
+			<summary>
+				POST api/v1/schedules
+			</summary>
+			<param name="dto">The schedule data.</param>
+			<returns>201 Created with the new Schedule ID.</returns>
+		</member>
+		<member name="M:taskmaster_pro.WebApi.Controllers.v1.SchedulesController.GetAll">
+			<summary>
+				GET api/v1/schedules
+			</summary>
+			<returns>All schedules.</returns>
+		</member>
+		<member name="M:taskmaster_pro.WebApi.Controllers.v1.SchedulesController.Get(System.Int32)">
+			<summary>
+				GET api/v1/schedules/{id}
+			</summary>
+			<param name="id">The ID of the schedule.</param>
+			<returns>The schedule with the specified ID.</returns>
+		</member>
+	</members>
+</doc>

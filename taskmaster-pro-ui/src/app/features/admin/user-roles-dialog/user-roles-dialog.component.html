@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Edit Roles</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Roles</mat-label>
+    <mat-select [formControl]="rolesControl" multiple>
+      <mat-option *ngFor="let r of allRoles" [value]="r">{{ r }}</mat-option>
+    </mat-select>
+    
+     <mat-error *ngIf="rolesControl.hasError('minSelected')">
+      Select at least one role.
+    </mat-error>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+</mat-dialog-actions>

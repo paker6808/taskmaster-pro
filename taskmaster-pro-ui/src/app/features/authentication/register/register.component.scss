@@ -1,0 +1,43 @@
+@use '../../../shared/styles/auth-forms' as *;
+
+.form-container {
+  @extend .auth-form-container;
+}
+
+re-captcha {
+  display: block;
+  margin: 16px 0;
+}
+mat-progress-bar {
+  height: 6px;
+  margin-top: 8px;
+}
+
+/* Chrome, Edge, Safari */
+.password-masked {
+  -webkit-text-security: disc;
+}
+
+/* Firefox fallback */
+.password-masked {
+  font-family: text-security-disc;
+}
+
+.password-strength-label {
+  margin-top: 4px;
+  font-size: 0.85rem;
+
+  &.weak {
+    color: #e53935; // red
+  }
+  &.medium {
+    color: #ffb300; // amber
+  }
+  &.strong {
+    color: #43a047; // green
+  }
+  &.very-strong {
+    color: #2e7d32; // darker green
+    font-weight: 600;
+  }
+}

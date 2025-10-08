@@ -1,0 +1,5 @@
+@use '../../../shared/styles/admin-detail-pages';
+
+.order-detail-container {
+  @extend .admin-detail-container;
+}

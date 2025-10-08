@@ -1,0 +1,73 @@
+# ==============================
+# Node / Angular (Frontend)
+# ==============================
+node_modules/
+dist/
+.angular/
+.env
+*.log
+coverage/
+.DS_Store
+*.tsbuildinfo
+/.sass-cache/
+/connect.lock
+/libpeerconnection.log
+testem.log
+/typings
+
+# Angular temporary files
+/tmp
+/out-tsc
+/bazel-out
+/.ng_build_cache/
+
+# ==============================
+# IDEs / Editors
+# ==============================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# ==============================
+# VS / .NET (Backend)
+# ==============================
+bin/
+obj/
+*.user
+*.suo
+*.vs/
+*.ncrunch*
+*.resharper*
+TestResults/
+*.dbmdl
+*.jfm
+
+# ==============================
+# Secrets / Local Config
+# ==============================
+secrets.json
+appsettings.Local*.json
+.env.local
+.env.*.local
+
+# ==============================
+# Logs
+# ==============================
+Logs/
+*.log
+
+# ==============================
+# System / OS
+# ==============================
+.DS_Store
+Thumbs.db

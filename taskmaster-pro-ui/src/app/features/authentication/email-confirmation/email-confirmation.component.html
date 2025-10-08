@@ -1,0 +1,14 @@
+<div class="confirmation-container single-action">
+  <h2 *ngIf="success; else errorTpl">Email confirmed</h2>
+  <ng-template #errorTpl>
+    <h2>Confirmation failed</h2>
+  </ng-template>
+
+  <p class="confirmation-text">
+    {{ message }}
+  </p>
+
+  <button *ngIf="success" class="custom-auth-button" (click)="goToLogin()">
+    Go to Login
+  </button>
+</div>

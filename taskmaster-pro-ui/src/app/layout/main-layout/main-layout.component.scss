@@ -1,0 +1,75 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: #333;
+}
+
+a.active {
+  font-weight: bold;
+  color: #007bff;
+}
+
+nav ul li {
+  margin-bottom: 0.5rem;
+}
+
+.sidenav-container {
+  height: 100%;
+  height: calc(100vh - 113px);
+}
+
+.mat-sidenav {
+  width: 300px;
+  max-width: 300px;
+
+  @media (max-width: 600px) {
+    width: 80vw;
+    max-width: 80vw;
+  }
+}
+
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+header {
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.app-toolbar {
+  height: 70px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-toggle {
+  height: 40px;
+  width: 40px;
+}
+
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 113px);
+  overflow: hidden;
+}
+
+.content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  box-sizing: border-box;
+  height: calc(100vh - 113px);
+}
+
+router-outlet {
+  height: calc(100vh - 113px);
+}

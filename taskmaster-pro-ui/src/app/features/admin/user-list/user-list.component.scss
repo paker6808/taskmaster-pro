@@ -1,0 +1,44 @@
+.user-list-container {
+  padding: 1rem;
+}
+
+.header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    flex: 0 1 auto;
+    margin: 0;
+  }
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+
+  button {
+    flex: 0 1 auto;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 320px) {
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}

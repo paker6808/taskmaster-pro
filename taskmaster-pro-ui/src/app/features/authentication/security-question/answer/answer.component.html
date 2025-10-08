@@ -1,0 +1,48 @@
+<div class="form-container">
+  <h2>Answer Security Question</h2>
+
+  <form [formGroup]="answerForm" (ngSubmit)="submitAnswer()">
+    <div class="security-question-text" *ngIf="securityQuestion">
+      {{ securityQuestion }}
+    </div>
+
+    <mat-form-field appearance="fill" class="custom-form-field">
+      <mat-label>Your Answer</mat-label>
+      <input matInput formControlName="securityAnswer" required autocomplete="off" />
+      <mat-error *ngIf="securityAnswer.hasError('required')">
+        Answer is required.
+      </mat-error>
+      <mat-error *ngIf="securityAnswer.hasError('minlength')">
+        Answer must be at least {{ securityAnswer.errors?.['minlength']?.requiredLength }} characters.
+      </mat-error>
+    </mat-form-field>
+
+    <re-captcha
+      #captchaRef
+      siteKey="6Ld2Sn4rAAAAAAV0mHtku7lKdrXrXbZSlEd1aA0q"
+      (resolved)="onCaptchaResolved($event)"
+      (expired)="onCaptchaExpired()">
+    </re-captcha>
+    <mat-error *ngIf="recaptchaError">
+      Please complete the CAPTCHA.
+    </mat-error>
+
+    <button
+      class="custom-auth-button"
+      color="primary"
+      type="submit"
+      [disabled]="answerForm.invalid || !captchaResolved || loading">
+      Submit
+    </button>
+
+    <button
+      class="custom-secondary-auth-button"
+      type="button"
+      (click)="goBack()"
+      [disabled]="loading">
+      Go Back
+    </button>
+
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+  </form>
+</div>

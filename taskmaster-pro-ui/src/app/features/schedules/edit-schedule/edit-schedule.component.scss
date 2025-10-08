@@ -1,0 +1,21 @@
+.edit-form-card {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+
+  h2 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+}

@@ -21,10 +21,16 @@ TaskmasterPro is a modern task and scheduling management application, featuring 
 - **Testing & Quality:** While not including a separate test project in this repo, the design emphasizes testability (dependencies injected via DI, MediatR handlers, clean layering). Static analysis and code reviews ensure quality.
 
 **Getting Started – Backend:** To run the API locally, you need .NET 9 SDK and SQL Server (or LocalDB). Key steps:
-1. **Configure:** Copy secrets.example.json to secrets.json in the project root and fill in your local credentials. Required keys include: JWT settings, reCAPTCHA secret, SMTP and SendGrid mail settings, Redis connection, STS Server URL, admin user password, and database connection string (ConnectionStrings:DefaultConnection). The example file contains placeholder values so you can run the project locally without exposing real secrets.
-2. **Database Migrations:** The app automatically applies migrations at startup via `Database.Migrate()`. Alternatively, you can run `dotnet ef database update` manually to create/update the schema.
+1. **Configure:** Copy secrets.example.json to secrets.json in the project root in the `taskmaster-pro.WebApi` project and fill in your local credentials. Required keys include: JWT settings, reCAPTCHA secret, SMTP and SendGrid mail settings, Redis connection, STS Server URL, admin user password, and database connection string (ConnectionStrings:DefaultConnection). The example file contains placeholder values so you can run the project locally without exposing real secrets.
+2. **Database Migrations:** The app automatically applies migrations at startup via `db.Database.Migrate()` in `Program.cs`. Alternatively, to create/update the schema manually run the following from the `taskmaster-pro.WebApi` folder:
+
+   ```powershell
+   dotnet ef database update --project ..\taskmaster-pro.Infrastructure.Persistence\
+   ```
 3. **Run:** Use `dotnet run` in the WebApi project. Swagger UI is enabled – navigate to `https://localhost:<port>/swagger` to explore endpoints. The API logs to console and the `Logs` folder.
 4. **Seeding:** On first run, an admin user is seeded (email: `admin@example.com`). Check console logs for the temp password. Admin can change it via the UI or API.
+
+✅ v1.0.1 update: The database now auto-creates on first run; no manual `dotnet ef database update` is required for local setup.
 
 **Tech Stack – Backend:** .NET 9.0 (ASP.NET Core), C#, Entity Framework Core (Code-First) with SQL Server, MediatR (CQRS), AutoMapper, FluentValidation, ASP.NET Identity (customized), JWT authentication, StackExchange.Redis (caching), Serilog (logging), Swashbuckle/Swagger, AutoBogus (data seeding), and custom Middleware/Filters. The solution is structured into Projects (`.Application`, `.Domain`, `.Infrastructure`, `.WebApi`) illustrating Onion architecture for maintainability and testability.
 

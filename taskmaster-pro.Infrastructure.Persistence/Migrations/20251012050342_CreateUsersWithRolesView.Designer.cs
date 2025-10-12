@@ -12,8 +12,8 @@ using taskmaster_pro.Infrastructure.Persistence.Contexts;
 namespace taskmasterpro.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250912210237_AddScheduleTitle_And_AssignedToId")]
-    partial class AddScheduleTitle_And_AssignedToId
+    [Migration("20251012050342_CreateUsersWithRolesView")]
+    partial class CreateUsersWithRolesView
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -186,6 +186,9 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -340,6 +343,9 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()

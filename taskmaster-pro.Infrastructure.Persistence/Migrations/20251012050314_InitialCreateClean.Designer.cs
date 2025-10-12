@@ -12,15 +12,15 @@ using taskmaster_pro.Infrastructure.Persistence.Contexts;
 namespace taskmasterpro.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250725144950_AddSecurityQuestionAndAnswerToAspNetUsers")]
-    partial class AddSecurityQuestionAndAnswerToAspNetUsers
+    [Migration("20251012050314_InitialCreateClean")]
+    partial class InitialCreateClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -172,6 +172,37 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("taskmaster_pro.Application.Common.Models.UserRolesView", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HighestRolePriority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Roles")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_UserRoles", (string)null);
+                });
+
             modelBuilder.Entity("taskmaster_pro.Domain.Entities.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -229,9 +260,9 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("newsequentialid()");
 
-                    b.Property<string>("AssignedTo")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<string>("AssignedToId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -244,6 +275,11 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
@@ -275,9 +311,11 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("UserId");
+                    b.ToTable("Schedules", (string)null);
 
-                    b.ToTable("Schedules");
+                    b.HasDiscriminator().HasValue("Schedule");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("taskmaster_pro.Infrastructure.Persistence.Contexts.Entities.ApplicationUser", b =>
@@ -299,9 +337,15 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("FailedSecurityQuestionAttempts")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -338,6 +382,9 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("SecurityQuestionLockoutEnd")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -359,6 +406,17 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("taskmaster_pro.Infrastructure.Persistence.Contexts.Entities.ScheduleEntity", b =>
+                {
+                    b.HasBaseType("taskmaster_pro.Domain.Entities.Schedule");
+
+                    b.HasIndex("AssignedToId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasDiscriminator().HasValue("ScheduleEntity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -429,13 +487,25 @@ namespace taskmasterpro.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("taskmaster_pro.Infrastructure.Persistence.Contexts.Entities.ApplicationUser", null)
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("taskmaster_pro.Infrastructure.Persistence.Contexts.Entities.ScheduleEntity", b =>
+                {
+                    b.HasOne("taskmaster_pro.Infrastructure.Persistence.Contexts.Entities.ApplicationUser", "AssignedTo")
+                        .WithMany()
+                        .HasForeignKey("AssignedToId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("taskmaster_pro.Infrastructure.Persistence.Contexts.Entities.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("AssignedTo");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("taskmaster_pro.Domain.Entities.Order", b =>

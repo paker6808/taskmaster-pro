@@ -61,7 +61,9 @@ TaskmasterPro is a modern task and scheduling management application, featuring 
 **Coverage:** 82.27% Statements (1448/1760) | 57.96% Branches (324/559) | 86.8% Functions (434/500) | 83.75% Lines (1397/1668)
 
 **Getting Started – Frontend:** To launch the UI locally:
-1. **Install Dependencies:** In the `Frontend` folder, run `npm install` (or `yarn install`).
+1. **Install Dependencies:**
+- Using npm: `npm install --legacy-peer-deps` (necessary due to peer dependency conflict in ng-recaptcha)  
+- Using yarn: `yarn install`
 2. **Configure API URL:** The Angular environment files already point to `https://localhost:44378/api` (or use your backend URL). Adjust `environment.ts` if needed.
 3. **Run Dev Server:** Execute `ng serve`. Then open `http://localhost:4200/` in a browser. The app will hot-reload on code changes.
 4. **Build for Production:** Run `ng build` to produce optimized assets in `dist/`. The production build is AOT-compiled and minified.

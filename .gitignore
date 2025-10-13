@@ -51,6 +51,7 @@ obj/
 TestResults/
 *.dbmdl
 *.jfm
+*.pubxml
 
 # ==============================
 # Secrets / Local Config

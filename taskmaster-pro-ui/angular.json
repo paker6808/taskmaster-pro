@@ -52,7 +52,7 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputPath": "dist/taskmaster-pro-ui",
+              "outputPath": "dist/taskmaster-pro-ui/browser",
               "outputHashing": "all"
             },
             "development": {

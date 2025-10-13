@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -255,7 +256,11 @@ try
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     var db = services.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+    if (builder.Environment.IsDevelopment())
+    {
+        // Only auto-migrate in Development
+        db.Database.Migrate();
+    }
 
     // ================== DATABASE SEEDER ==================
     if (app.Environment.IsDevelopment())
@@ -293,6 +298,7 @@ try
         });
         app.UseHsts();
     }
+
     // ================== MIDDLEWARE CONFIG ==================
     app.UseSerilogRequestLogging();
     app.UseErrorHandlingMiddleware();

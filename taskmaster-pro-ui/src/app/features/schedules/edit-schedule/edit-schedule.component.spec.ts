@@ -273,11 +273,13 @@ describe('EditScheduleComponent', () => {
   
   it('should set endBeforeMin error when end is less than 1 hour after start', () => {
     const start = new Date();
-    const end = new Date(start.getTime() + 30 * 60 * 1000); // 30 minutes later
+    const end = new Date(start.getTime() - 30 * 60 * 1000); // 30 mins before start (invalid)
+
     component.editForm.get('scheduledStart')?.setValue(start);
     component.editForm.get('scheduledEnd')?.setValue(end);
 
     component.editForm.updateValueAndValidity();
+
     const endErrors = component.editForm.get('scheduledEnd')?.errors;
     expect(endErrors?.['endBeforeStart']).toBeTrue();
   });

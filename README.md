@@ -27,7 +27,7 @@ TaskmasterPro is a modern task and scheduling management application, featuring 
    ```powershell
    dotnet ef database update --project ..\taskmaster-pro.Infrastructure.Persistence\
    ```
-3. **Run:** Use `dotnet run` in the WebApi project. Swagger UI is enabled – navigate to `https://localhost:<port>/swagger` to explore endpoints. The API logs to console and the `Logs` folder.
+3. **Run:** Use `dotnet run` in the WebApi project. Swagger UI is enabled – navigate to `https://localhost:<port>/swagger` or `https://taskmasterpro.runasp.net/swagger` to explore endpoints. The API logs to console and the `Logs` folder.
 4. **Seeding:** On first run, an admin user is seeded (email: `admin@example.com`). Check console logs for the temp password. Admin can change it via the UI or API.
 
 ✅ v1.0.1 update: The database now auto-creates on first run; no manual `dotnet ef database update` is required for local setup.
@@ -64,7 +64,7 @@ TaskmasterPro is a modern task and scheduling management application, featuring 
 1. **Install Dependencies:**
 - Using npm: `npm install --legacy-peer-deps` (necessary due to peer dependency conflict in ng-recaptcha)  
 - Using yarn: `yarn install`
-2. **Configure API URL:** The Angular environment files already point to `https://localhost:44378/api` (or use your backend URL). Adjust `environment.ts` if needed.
+2. **Configure API URL:** The Angular environment files already point to `https://localhost:44378/api` (development) and `https://taskmasterpro.runasp.net/api` (production). Adjust `environment.ts` or `environment.prod.ts` if needed to avoid mixed-content errors.
 3. **Run Dev Server:** Execute `ng serve`. Then open `http://localhost:4200/` in a browser. The app will hot-reload on code changes.
 4. **Build for Production:** Run `ng build` to produce optimized assets in `dist/`. The production build is AOT-compiled and minified.
 

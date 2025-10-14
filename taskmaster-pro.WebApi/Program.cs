@@ -5,6 +5,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,7 @@ using taskmaster_pro.Infrastructure.Persistence.Contexts.Entities;
 using taskmaster_pro.Infrastructure.Persistence.IdentityServices;
 using taskmaster_pro.Infrastructure.Persistence.Mappings;
 using taskmaster_pro.Infrastructure.Shared.Services;
+using taskmaster_pro.Infrastructure.Shared.Settings;
 using taskmaster_pro.WebApi.Identity;
 using taskmaster_pro.WebApi.Services;
 
@@ -33,6 +35,7 @@ try
     // ========================= BUILDER + LOGGING =========================
     var builder = WebApplication.CreateBuilder(args);
     var mailSettings = builder.Configuration.GetSection("MailSettings").Get<MailSettings>();
+    var sendGridSettings = builder.Configuration.GetSection("SendGrid").Get<SendGridSettings>();
 
     Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -161,7 +164,10 @@ try
     }
     else
     {
-        builder.Services.AddSingleton<IEmailSender, SendGridEmailSender>();
+        builder.Services.AddTransient<IEmailSender>(sp =>
+            new SendGridEmailSender(
+                Options.Create(sendGridSettings)
+            ));
     }
 
     // ================== CONTROLLERS + VALIDATION ==================

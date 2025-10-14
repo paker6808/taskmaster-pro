@@ -238,9 +238,12 @@ try
     {
         options.AddPolicy("AllowFrontend", policy =>
         {
-            policy.WithOrigins("http://localhost:4200")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
+            policy.WithOrigins(
+                "https://taskmaster-pro.pages.dev", // production frontend
+                "http://localhost:4200" // development frontend
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         });
     });
     builder.Services.AddHealthChecks();

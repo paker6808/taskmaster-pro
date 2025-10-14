@@ -259,21 +259,34 @@ try
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     var db = services.GetRequiredService<ApplicationDbContext>();
+    var logger = services.GetRequiredService<ILogger<Program>>();
     if (builder.Environment.IsDevelopment())
     {
         // Only auto-migrate in Development
         db.Database.Migrate();
     }
 
+    // ================== IDENTITY SEEDER ==================
+    try
+    {
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var config = services.GetRequiredService<IConfiguration>();
+        var identitySeeder = new IdentitySeeder(roleManager, userManager, config);
+        await identitySeeder.SeedAsync();
+        logger.LogInformation("IdentitySeeder completed.");
+    }
+    catch (Exception ex)
+    {
+        var logger2 = services.GetRequiredService<ILogger<Program>>();
+        logger2.LogError(ex, "Identity seeding failed.");
+    }
+
     // ================== DATABASE SEEDER ==================
     if (app.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        var identitySeeder = new IdentitySeeder(roleManager, userManager);
-        await identitySeeder.SeedAsync();
+        logger.LogInformation("Running dev-only database seeder...");
         var databaseSeeder = new DatabaseSeeder(db);
         await databaseSeeder.GenerateAndSeedAsync(
             rowOrders: 50,

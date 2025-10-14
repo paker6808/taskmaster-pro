@@ -10,11 +10,16 @@ namespace taskmaster_pro.Infrastructure.Persistence.SeedData
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _config;
 
-        public IdentitySeeder(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public IdentitySeeder(
+            RoleManager<IdentityRole> roleManager,
+            UserManager<ApplicationUser> userManager,
+            IConfiguration config)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _config = config;
         }
 
         /// <summary>
@@ -33,23 +38,24 @@ namespace taskmaster_pro.Infrastructure.Persistence.SeedData
             }
 
             // 2. Seed admin user
-            var adminEmail = "admin@example.com";
+            var adminEmail = _config["AdminUser:Email"] ?? throw new Exception("Missing AdminUser:Email in configuration");
+            var normalizedUsername = adminEmail.Trim().ToLowerInvariant();
             var adminUser = await _userManager.FindByEmailAsync(adminEmail);
-            var desiredPassword = "AdminPass123!";
+            var desiredPassword = _config["AdminUser:Password"] ?? throw new Exception("Missing AdminUser:Password in configuration");
 
             if (adminUser == null)
             {
                 adminUser = new ApplicationUser
                 {
-                    UserName = "admin",
+                    UserName = normalizedUsername,
                     Email = adminEmail,
                     EmailConfirmed = true,
                     FirstName = "Admin",
                     LastName = "User",
-                    SecurityQuestion = "What is your admin code?",
+                    SecurityQuestion = _config["AdminUser:SecurityQuestion"] ?? throw new Exception("Missing AdminUser:Security question in configuration")
                 };
                 var hasher = new PasswordHasher<ApplicationUser>();
-                adminUser.SecurityAnswerHash = hasher.HashPassword(adminUser, "admin123");
+                adminUser.SecurityAnswerHash = hasher.HashPassword(adminUser, _config["AdminUser:SecurityAnswer"] ?? throw new Exception("Missing AdminUser:Security Answer in configuration"));
 
                 var createResult = await _userManager.CreateAsync(adminUser, desiredPassword);
                 if (!createResult.Succeeded)
@@ -59,7 +65,7 @@ namespace taskmaster_pro.Infrastructure.Persistence.SeedData
             {
                 if (string.IsNullOrWhiteSpace(adminUser.UserName))
                 {
-                    adminUser.UserName = "admin";
+                    adminUser.UserName = normalizedUsername;
                     await _userManager.UpdateAsync(adminUser);
                 }
                 if (!adminUser.EmailConfirmed)

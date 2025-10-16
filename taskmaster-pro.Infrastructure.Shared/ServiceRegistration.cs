@@ -9,7 +9,6 @@ namespace taskmaster_pro.Infrastructure.Shared
             // Settings
             services.Configure<MailSettings>(config.GetSection("MailSettings"));
             services.Configure<RecaptchaSettings>(config.GetSection("Recaptcha"));
-            services.Configure<SendGridSettings>(config.GetSection("SendGrid"));
 
             // Utilities
             services.AddSingleton<IDateTimeService, DateTimeService>();

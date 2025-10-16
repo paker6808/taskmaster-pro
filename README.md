@@ -12,7 +12,17 @@ TaskmasterPro is a modern task and scheduling management application, featuring 
 
 **Authentication & Security:** User accounts leverage ASP.NET Core Identity (with custom ApplicationUser extending IdentityUser) for robust authentication. I require email confirmation and strong passwords (min 8 chars with mixed case and digits). All API endpoints use JWT (JSON Web Tokens) for stateless auth – after login the client gets a signed JWT, which is included in requests. JWT is an industry-standard token format for secure information exchange[5]. I enforce role-based authorization: users can have User or Admin roles (defined in configuration). Admin-only controllers (like AdminController) are protected by `[Authorize(Roles="Admin")]`. Additionally, Google reCAPTCHA (v3 with occasional challenge prompts) is integrated on all forms that change state (registration, password reset) to prevent bots – normally invisible, but sometimes users must complete a visual challenge.
 
-**Email / External Services:** The API sends email notifications (confirmations, password resets) using SMTP via a pluggable IEmailSender. By default the application uses a generic SMTP sender configured via MailSettings (so you can supply Gmail, Brevo, Mailjet, Elastic Email or any SMTP provider credentials). If you want provider-specific capabilities (template management, webhooks, analytics, higher throughput or improved deliverability) we can integrate a provider API/SDK later. User sessions are cached in Redis (StackExchange.Redis) for distributed session support – Redis is an in-memory store often used for caching/scalable session state[7]. Application configuration (like JWT secret, email SMTP settings, reCAPTCHA secret) is managed via `appsettings.json` and environment variables. Logging is handled by Serilog, writing to console and rolling log files (in a `/Logs` directory).
+**Email / External Services:** The API sends email notifications (confirmations, password resets) using SMTP via a pluggable IEmailSender. By default the application uses a generic SMTP sender configured via MailSettings. Supported providers include:
+- Gmail
+- Brevo (formerly Sendinblue) - recommended for production with a verified custom domain (e.g., `taskmasterpro.site`) and a dedicated sender email like `no-reply@taskmasterpro.site`. **This ensures deliverability and avoids errors (like HTTP 400 on registration) due to unverified sender addresses.**
+- Mailjet
+- Elastic Email
+
+Provider-specific capabilities (template management, webhooks, analytics, higher throughput, improved deliverability) can be integrated later via provider API/SDK.
+
+**User sessions:** Cached in Redis (StackExchange.Redis) for distributed session support – Redis is an in-memory store often used for caching/scalable session state[7].
+**Application configuration:** Managed via `appsettings.json` and environment variables (JWT secret, email SMTP settings, reCAPTCHA secret, etc.).
+**Logging:** Handled by Serilog, writing to console and rolling log files (in a `/Logs` directory).
 
 **API Features:** Key backend features include:
 - **User Management:** Register, email-confirm, login, password reset (with security question and reCAPTCHA), profile update, change password, delete account (soft delete). Admins can list users, change roles, and unlock locked accounts.
@@ -22,6 +32,8 @@ TaskmasterPro is a modern task and scheduling management application, featuring 
 
 **Getting Started – Backend:** To run the API locally, you need .NET 9 SDK and SQL Server (or LocalDB). Key steps:
 1. **Configure:** Copy secrets.example.json to secrets.json in the project root in the `taskmaster-pro.WebApi` project and fill in your local credentials. Required keys include: JWT settings, reCAPTCHA secret, SMTP mail settings, Redis connection, STS Server URL, admin user password, Frontend:BaseUrl, and database connection string (ConnectionStrings:DefaultConnection). The example file contains placeholder values so you can run the project locally without exposing real secrets.
+- **Redis:** For local development, use `localhost:6379` (Docker Redis).  
+- **Production:** Use your Upstash Redis TCP connection (format: **hostname:port,password=<token>,ssl=True,abortConnect=False**). This ensures distributed session support without publishing a new version of the app.
 - **Security note:** **Do not commit** `secrets.json` or any file containing real credentials. Keep production secrets in your host's secure configuration (App Service settings, environment variables, or a secret store). `secrets.example.json` should contain **placeholders only**.
 - **Frontend Base URL:** `Frontend:BaseUrl` may be placed in `appsettings.json` as a default **and** overridden by `secrets.json` or environment-specific settings in production (recommended). For local development you can set it to `http://localhost:4200`.
 2. **Database Migrations:** The app automatically applies migrations at startup via `db.Database.Migrate()` in `Program.cs`. Alternatively, to create/update the schema manually run the following from the `taskmaster-pro.WebApi` folder:

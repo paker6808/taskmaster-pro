@@ -21,14 +21,16 @@ TaskmasterPro is a modern task and scheduling management application, featuring 
 - **Testing & Quality:** While not including a separate test project in this repo, the design emphasizes testability (dependencies injected via DI, MediatR handlers, clean layering). Static analysis and code reviews ensure quality.
 
 **Getting Started – Backend:** To run the API locally, you need .NET 9 SDK and SQL Server (or LocalDB). Key steps:
-1. **Configure:** Copy secrets.example.json to secrets.json in the project root in the `taskmaster-pro.WebApi` project and fill in your local credentials. Required keys include: JWT settings, reCAPTCHA secret, SMTP mail settings, Redis connection, STS Server URL, admin user password, and database connection string (ConnectionStrings:DefaultConnection). The example file contains placeholder values so you can run the project locally without exposing real secrets.
+1. **Configure:** Copy secrets.example.json to secrets.json in the project root in the `taskmaster-pro.WebApi` project and fill in your local credentials. Required keys include: JWT settings, reCAPTCHA secret, SMTP mail settings, Redis connection, STS Server URL, admin user password, Frontend:BaseUrl, and database connection string (ConnectionStrings:DefaultConnection). The example file contains placeholder values so you can run the project locally without exposing real secrets.
+- **Security note:** **Do not commit** `secrets.json` or any file containing real credentials. Keep production secrets in your host's secure configuration (App Service settings, environment variables, or a secret store). `secrets.example.json` should contain **placeholders only**.
+- **Frontend Base URL:** `Frontend:BaseUrl` may be placed in `appsettings.json` as a default **and** overridden by `secrets.json` or environment-specific settings in production (recommended). For local development you can set it to `http://localhost:4200`.
 2. **Database Migrations:** The app automatically applies migrations at startup via `db.Database.Migrate()` in `Program.cs`. Alternatively, to create/update the schema manually run the following from the `taskmaster-pro.WebApi` folder:
 
    ```powershell
    dotnet ef database update --project ..\taskmaster-pro.Infrastructure.Persistence\
    ```
 3. **Run:** Use `dotnet run` in the WebApi project. Swagger UI is enabled – navigate to `https://localhost:<port>/swagger` or `https://taskmasterpro.runasp.net/swagger` to explore endpoints. The API logs to console and the `Logs` folder.
-4. **Seeding:** On first run, an admin user is seeded (email: `admin@example.com`). Check console logs for the temp password. Admin can change it via the UI or API.
+4. **Seeding:** On first run the app will create an administrator account from configuration (values under AdminUser in secrets.json / environment). Make sure AdminUser:Email, AdminUser:Password, AdminUser:SecurityQuestion and AdminUser:SecurityAnswer are set in your secrets or environment for the initial admin. After startup you can change the admin password via the UI or API.
 
 ✅ v1.0.1 update: The database now auto-creates on first run; no manual `dotnet ef database update` is required for local setup.
 

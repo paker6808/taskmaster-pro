@@ -1,12 +1,41 @@
 # TaskmasterPro – Full-Stack Portfolio Project
 
-TaskmasterPro is a modern task and scheduling management application, featuring a rich Angular front end and a robust .NET 9.0 WebAPI back end. The API is built with ASP.NET Core 9 and follows a clean, Onion (DDD-inspired) architecture: the Domain layer defines entities (Orders, Schedules, etc.); the Application layer implements CQRS with MediatR, FluentValidation, and AutoMapper for clean separation of concerns; and the Infrastructure layer handles persistence and external integrations. The front end is an Angular 20 app using Angular Material for a polished UI, complete with responsive design, charts, and secure authentication.
+## Table of Contents
+
+- [Motivation](#motivation)
+- [Overview](#overview)
+- [Demo Videos](#demo-videos)
+- [Backend (TaskmasterPro API)](#backend-taskmasterpro-api)
+  - [Getting Started – Backend](#getting-started--backend)
+  - [Admin Functionality](#admin-functionality)
+- [Frontend (TaskmasterPro UI)](#frontend-taskmasterpro-ui)
+- [Additional Notes](#additional-notes)
+- [License](#license)
+
+## Motivation
+
+Built as a portfolio project to demonstrate mastery of modern full-stack engineering: a production-grade .NET 9 Web API (Onion/CQRS patterns) paired with an Angular 20 front end. The goals are pragmatic — show real-world authentication/authorization, deployability, and maintainable architecture — while keeping sensitive admin access restricted and auditable for security.
+
+## Overview
+TaskmasterPro is a modern task and scheduling management application, featuring a rich Angular front end and a robust .NET 9.0 Web API backend. The API is built with ASP.NET Core 9 and follows a clean, Onion (DDD-inspired) architecture: the Domain layer defines entities (Orders, Schedules, etc.); the Application layer implements CQRS with MediatR, FluentValidation, and AutoMapper for clean separation of concerns; and the Infrastructure layer handles persistence and external integrations. The front end is an Angular 20 app using Angular Material for a polished UI, complete with responsive design, charts, and secure authentication.
+
+## Demo Videos
+
+To illustrate the main features, two short demo videos are provided:
+
+- 🎥 **User Demo (Core Functionality):** [Watch on YouTube](https://youtu.be/<user-demo-id>)
+  - Shows registration, login, dashboard, orders, and schedules.
+
+- 🎥 **Admin Demo (Advanced Features):** [Watch on YouTube](https://youtu.be/<admin-demo-id>)
+  - Shows admin login, user management, role editing, and order/schedule control.
+
+> Full live admin access is disabled for security. The admin demo illustrates all restricted features.
 
 ---
 
 ## Backend (TaskmasterPro API)
 
-**Framework:** The backend runs on .NET 9.0 (the latest .NET release)[1], using ASP.NET Core Web API. It exposes RESTful endpoints for managing orders, schedules, and user accounts. All data access is code-first with Entity Framework Core (EF Core 9) and SQL Server. The database schema is managed via EF migrations (with custom tables/views like user-role views) and seeded with initial data (including an administrator account) using libraries like AutoBogus.
+**Framework:** The backend runs on .NET 9.0 [1] (ASP.NET Core Web API), exposing RESTful endpoints for managing orders, schedules, and user accounts. All data access is code-first with Entity Framework Core (EF Core 9) and SQL Server. The database schema is managed via EF migrations (with custom tables/views like user-role views) and seeded with initial data (including an administrator account) using libraries like AutoBogus.
 
 **Architecture & Patterns:** The project uses the Onion/Clean Architecture pattern. Business logic lives in the Application layer, which uses MediatR (a simple in-process mediator library)[2] to implement CQRS (commands/queries) and notifications. Entities and DTOs are defined in Domain and Application layers. I also implemented repository and service layers for data access (e.g. generic repositories, custom Schedule/Order repositories, User/Authentication services) to encapsulate the EF logic. Object mapping between entities and DTOs is handled by AutoMapper[3], which maps complex models to flat DTOs by convention. Input validation uses FluentValidation[4], allowing me to express validation rules (e.g. required fields, formats) in a fluent, strongly-typed way.
 
@@ -31,7 +60,7 @@ Provider-specific capabilities (template management, webhooks, analytics, higher
 - **Testing & Quality:** While not including a separate test project in this repo, the design emphasizes testability (dependencies injected via DI, MediatR handlers, clean layering). Static analysis and code reviews ensure quality.
 
 **Getting Started – Backend:** To run the API locally, you need .NET 9 SDK and SQL Server (or LocalDB). Key steps:
-1. **Configure:** Copy secrets.example.json to secrets.json in the project root in the `taskmaster-pro.WebApi` project and fill in your local credentials. Required keys include: JWT settings, reCAPTCHA secret, SMTP mail settings, Redis connection, STS Server URL, admin user password, Frontend:BaseUrl, and database connection string (ConnectionStrings:DefaultConnection). The example file contains placeholder values so you can run the project locally without exposing real secrets.
+1. **Configure:** Copy secrets.example.json to secrets.json in the project root in the `taskmaster-pro.WebApi` project and fill in your local credentials. **See Admin Functionality below for local admin credentials and demo instructions.** Required keys include: JWT settings, reCAPTCHA secret, SMTP mail settings, Redis connection, STS Server URL, admin user password, Frontend:BaseUrl, and database connection string (ConnectionStrings:DefaultConnection). The example file contains placeholder values so you can run the project locally without exposing real secrets.
 - **Redis:** For local development, use `localhost:6379` (Docker Redis).  
 - **Production:** Use your Upstash Redis TCP connection (format: **hostname:port,password=<token>,ssl=True,abortConnect=False**). This ensures distributed session support without publishing a new version of the app.
 - **Security note:** **Do not commit** `secrets.json` or any file containing real credentials. Keep production secrets in your host's secure configuration (App Service settings, environment variables, or a secret store). `secrets.example.json` should contain **placeholders only**.
@@ -43,6 +72,30 @@ Provider-specific capabilities (template management, webhooks, analytics, higher
    ```
 3. **Run:** Use `dotnet run` in the WebApi project. Swagger UI is enabled – navigate to `https://localhost:<port>/swagger` or `https://taskmasterpro.runasp.net/swagger` to explore endpoints. The API logs to console and the `Logs` folder.
 4. **Seeding:** On first run the app will create an administrator account from configuration (values under AdminUser in secrets.json / environment). Make sure AdminUser:Email, AdminUser:Password, AdminUser:SecurityQuestion and AdminUser:SecurityAnswer are set in your secrets or environment for the initial admin. After startup you can change the admin password via the UI or API.
+
+## Admin Functionality
+
+The app includes a full admin dashboard for managing users, orders, and schedules.
+
+### Local / Production Admin seeding
+
+The project seeds an administrator account on first run using values from configuration/secrets. For local development, copy `secrets.example.json` → `secrets.json` and set `AdminUser:Email`/`AdminUser:Password` (placeholders in `secrets.example.json`). Example local credentials (placeholders — do **not** commit real secrets):
+
+- Email: `admin@example.local`
+- Password: `Admin123!`
+
+**Production behavior:** the app reads admin credentials from the host's secret store / environment variables. The seeder **only creates the admin if it does not already exist** (no automatic overwrite). Store production admin credentials securely (App Service settings, Azure Key Vault, etc.), use a strong password, and keep backups. For serious evaluation you can provide temporary access to a sandbox restored from backup.
+
+### Admin Demo
+- See the [🎥 **Admin Demo**](#demo-videos) above for a complete walkthrough of all restricted admin features.
+- Full live admin access is **not publicly available**. For **serious evaluation**, temporary access can be provided on request by:
+  1. Restoring a database backup to a sandbox environment, or  
+  2. Supplying a database dump the evaluator can run locally.
+- If you need temporary live access, contact me; access will be time-limited and performed only after a backup is taken.
+
+### Notes on secrets and safety
+- `secrets.example.json` contains placeholder values and **should be committed**.  
+- **Never** commit `secrets.json` (real credentials). Ensure `secrets.json` is in `.gitignore`.
 
 ✅ v1.0.1 update: The database now auto-creates on first run; no manual `dotnet ef database update` is required for local setup.
 

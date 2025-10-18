@@ -23,8 +23,8 @@
         <div class="col">
           <p><strong>Order ID:</strong> {{ schedule.orderId }}</p>
           <p><strong>Title:</strong> {{ schedule.title }}</p>
-          <p><strong>Scheduled Start:</strong> {{ schedule.scheduledStart | date: 'medium' }}</p>
-          <p><strong>Scheduled End:</strong> {{ schedule.scheduledEnd | date: 'medium' }}</p>
+          <p><strong>Scheduled Start:</strong> {{ schedule.scheduledStart | date: 'mediumDate' }}</p>
+          <p><strong>Scheduled End:</strong> {{ schedule.scheduledEnd | date: 'mediumDate' }}</p>
           <p><strong>Assigned To:</strong>
              {{ schedule.assignedTo?.fullName ?? '—' }}
              ({{ schedule.assignedTo?.email  ?? '—' }})

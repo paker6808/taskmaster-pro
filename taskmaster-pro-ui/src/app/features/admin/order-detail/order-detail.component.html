@@ -22,7 +22,7 @@
       <div class="row">
         <div class="col">
           <p><strong>Customer:</strong> {{ order.customerName }}</p>
-          <p><strong>Order Date:</strong> {{ order.orderDate | date: 'medium' }}</p>
+          <p><strong>Order Date:</strong> {{ order.orderDate | date: 'mediumDate' }}</p>
           <p>
             <strong>Status:</strong>
             <span [ngClass]="{

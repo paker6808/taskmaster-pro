@@ -86,9 +86,14 @@ export class ExportService {
         // Format ISO dates
         if (typeof value === 'string' && /\d{4}-\d{2}-\d{2}T/.test(value)) {
           const date = new Date(value);
-          value = isNaN(date.getTime())
-            ? value
-            : date.toLocaleString();
+          if (!isNaN(date.getTime())) {
+            // Date-only fields
+            if (key === 'orderDate' || key === 'scheduledStart' || key === 'scheduledEnd') {
+              value = date.toLocaleDateString(); // e.g., 18.10.2025
+            } else {
+              value = date.toLocaleString(); // full date + time for created/updated etc.
+            }
+          }
         }
 
         // Format numbers (except IDs) with German locale

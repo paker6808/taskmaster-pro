@@ -39,7 +39,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   isLoading = true;
   totalOrders = 0;
+  displayedOrders = 0;
   totalSchedules = 0;
+  displayedSchedules = 0;
   totalUsers = 0;
 
   public barChartLabels: string[] = [];
@@ -98,22 +100,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private dashboardService: DashboardService) {}
 
   ngOnInit() {
-    // build labels up to current month
+    // Build labels up to the current month for initial loading UI
     const now = new Date();
     const currentYear = now.getFullYear();
     const lastMonth = now.getMonth();
 
-    this.barChartLabels = [];
-    for (let m = 0; m <= lastMonth; m++) {
-      this.barChartLabels.push(new Date(currentYear, m).toLocaleString('default', { month: 'short' }));
-    }
-
-    this.fullMonthLabels = [];
-    for (let m = 0; m <= lastMonth; m++) {
-      this.fullMonthLabels.push(new Date(currentYear, m).toLocaleString('default', { month: 'long', year: 'numeric' } ));
-    }
+    this.buildLabelsUpTo(lastMonth, currentYear);
 
     this.loadDashboard();
+  }
+
+  private buildLabelsUpTo(lastMonthIndex: number, year: number) {
+    this.barChartLabels = [];
+    this.fullMonthLabels = [];
+    for (let m = 0; m <= lastMonthIndex; m++) {
+      this.barChartLabels.push(new Date(year, m).toLocaleString('default', { month: 'short' }));
+      this.fullMonthLabels.push(new Date(year, m).toLocaleString('default', { month: 'long', year: 'numeric' }));
+    }
   }
 
   private loadDashboard(year?: number) {
@@ -153,6 +156,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
               }
             ]
           };
+
+          // Sum displayed months only (Jan–current month)
+          this.displayedOrders = ordersData.reduce((a, b) => a + b, 0);
+          this.displayedSchedules = schedulesData.reduce((a, b) => a + b, 0);
 
           this.isLoading = false;
         },

@@ -10,16 +10,22 @@
 
   <div *ngIf="!isLoading" class="cards-grid">
     <mat-card class="glass-card stat-card">
-      <mat-card-title>Total Orders</mat-card-title>
+      <mat-card-title>Total Orders <small class="muted"> (all time)</small></mat-card-title>
       <mat-card-content>
         <div class="stat-value">{{ totalOrders }}</div>
+        <div class="small-muted">
+          Displayed (Jan–{{ barChartLabels[barChartLabels.length - 1] }}): {{ displayedOrders }}
+        </div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="glass-card stat-card">
-      <mat-card-title>Total Schedules</mat-card-title>
+      <mat-card-title>Total Schedules <small class="muted">(all time)</small></mat-card-title>
       <mat-card-content>
         <div class="stat-value">{{ totalSchedules }}</div>
+        <div class="small-muted">
+          Displayed (Jan–{{ barChartLabels[barChartLabels.length - 1] }}): {{ displayedSchedules }}
+        </div>
       </mat-card-content>
     </mat-card>
 
@@ -32,8 +38,8 @@
 
     <mat-card class="glass-card chart-card">
       <mat-card-title>
-        Orders & Schedules This Year
-        <small class="chart-range"> (Jan–{{ barChartLabels.length ? barChartLabels[barChartLabels.length - 1] : '—' }})</small>
+        Orders & Schedules — Current Year
+        <small class="chart-range">(Jan–{{ barChartLabels[barChartLabels.length - 1] }})</small>
       </mat-card-title>
       <mat-card-content>
         <canvas baseChart

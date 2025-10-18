@@ -49,7 +49,7 @@ try
             typeof(CreateScheduleCommandHandler).Assembly,
             typeof(GetPagedUsersQueryHandler).Assembly,
             typeof(RegisterUserCommandHandler).Assembly,
-            typeof(GetDashboardsStatsQueryHandler).Assembly,
+            typeof(GetDashboardStatsQueryHandler).Assembly,
             typeof(ChangePasswordCommandHandler).Assembly
         )
     );  

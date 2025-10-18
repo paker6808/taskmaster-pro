@@ -3,8 +3,8 @@ using taskmaster_pro.Application.Features.Schedules.Queries.GetScheduleById;
 using taskmaster_pro.Application.Features.Schedules.Queries.PagedSchedules;
 using taskmaster_pro.Infrastructure.Persistence.Contexts.Entities;
 using PersistenceExtensions = taskmaster_pro.Infrastructure.Persistence.Extensions.IQueryableExtensions;
-using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardsStatsQueryHandler;
 using taskmaster_pro.Infrastructure.Persistence.Extensions;
+using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardStatsQuery;
 
 namespace taskmaster_pro.Infrastructure.Persistence.Repositories
 {

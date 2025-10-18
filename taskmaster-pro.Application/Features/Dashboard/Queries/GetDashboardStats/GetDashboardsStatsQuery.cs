@@ -1,8 +1,8 @@
-﻿using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardsStatsQueryHandler;
+﻿using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardStatsQuery;
 
 namespace taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard
 {
-    public record GetDashboardsStatsQueryHandler(int Year) : IRequest<DashboardStatsDto>
+    public record GetDashboardStatsQuery(int Year) : IRequest<DashboardStatsDto>
     {
         public class DashboardStatsDto
         {

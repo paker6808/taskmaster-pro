@@ -1,9 +1,8 @@
-﻿using taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard;
-using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardsStatsQueryHandler;
+﻿using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardStatsQuery;
 
-namespace taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboardStats
+namespace taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard
 {
-    public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardsStatsQueryHandler, DashboardStatsDto>
+    public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQuery, DashboardStatsDto>
     {
         private readonly IOrderRepositoryAsync _orderRepository;
         private readonly IScheduleRepositoryAsync _scheduleRepository;
@@ -22,7 +21,7 @@ namespace taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboardStat
             _currentUserService = currentUserService;
         }
 
-        public async Task<DashboardStatsDto> Handle(GetDashboardsStatsQueryHandler request, CancellationToken cancellationToken)
+        public async Task<DashboardStatsDto> Handle(GetDashboardStatsQuery request, CancellationToken cancellationToken)
         {
             var year = request.Year;
 

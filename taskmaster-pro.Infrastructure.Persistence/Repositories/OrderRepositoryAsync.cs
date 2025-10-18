@@ -2,7 +2,7 @@
 using taskmaster_pro.Application.Features.Orders.Queries.PagedOrders;
 using taskmaster_pro.Infrastructure.Shared;
 using taskmaster_pro.Infrastructure.Persistence.Contexts.Entities;
-using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardsStatsQueryHandler;
+using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardStatsQuery;
 
 namespace taskmaster_pro.Infrastructure.Persistence.Repositories
 {

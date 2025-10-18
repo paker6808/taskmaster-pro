@@ -1,6 +1,6 @@
 ﻿using taskmaster_pro.Application.Features.Schedules.Queries.GetScheduleById;
 using taskmaster_pro.Application.Features.Schedules.Queries.PagedSchedules;
-using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardsStatsQueryHandler;
+using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardStatsQuery;
 
 namespace taskmaster_pro.Application.Interfaces.Repositories
 {

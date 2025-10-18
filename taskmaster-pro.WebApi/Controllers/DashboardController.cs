@@ -1,5 +1,5 @@
 ﻿using taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard;
-using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardsStatsQueryHandler;
+using static taskmaster_pro.Application.Features.Dashboard.Queries.GetDashboard.GetDashboardStatsQuery;
 
 namespace Controllers
 {
@@ -30,7 +30,7 @@ namespace Controllers
         public async Task<ActionResult<DashboardStatsDto>> GetStats([FromQuery] int? year)
         {
             var targetYear = year ?? DateTime.UtcNow.Year;
-            var stats = await _mediator.Send(new GetDashboardsStatsQueryHandler(targetYear));
+            var stats = await _mediator.Send(new GetDashboardStatsQuery(targetYear));
             return Ok(stats);
         }
 

@@ -1,4 +1,5 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { ListAllOrdersComponent } from './list-all-orders.component';
 import { AdminService } from '../services/admin.service';
 import { NotificationService } from '../../../shared/services/notification.service';
@@ -18,6 +19,7 @@ describe('ListAllOrdersComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let dialogServiceSpy: jasmine.SpyObj<DialogService>;
   let exportServiceSpy: any;
+  let clipboardSpy: jasmine.SpyObj<Clipboard>;
 
   beforeEach(() => {
     adminServiceSpy = jasmine.createSpyObj('AdminService', ['getPagedOrders', 'deleteOrder']);
@@ -25,6 +27,7 @@ describe('ListAllOrdersComponent', () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     dialogServiceSpy = jasmine.createSpyObj('DialogService', ['confirm']);
     dialogServiceSpy.confirm.and.returnValue(of(true));
+    clipboardSpy = jasmine.createSpyObj('Clipboard', ['copy']);
 
     // Default responses
     adminServiceSpy.getPagedOrders.and.returnValue(of({ data: [], draw: 1, recordsTotal: 0 }));
@@ -40,6 +43,7 @@ describe('ListAllOrdersComponent', () => {
         { provide: NotificationService, useValue: notificationSpy },
         { provide: Router, useValue: routerSpy },
         { provide: DialogService, useValue: dialogServiceSpy  },
+        { provide: Clipboard, useValue: clipboardSpy },
         { provide: PAGE_SIZE_OPTIONS, useValue: DEFAULT_PAGE_SIZE_OPTIONS },
         { provide: 'ExportService', useValue: exportServiceSpy },
         { provide: (window as any).ExportService, useValue: exportServiceSpy }
@@ -94,9 +98,9 @@ describe('ListAllOrdersComponent', () => {
   }));
 
   it('should copy order ID to clipboard', () => {
-    const writeSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
     component.copyId('123');
-    expect(writeSpy).toHaveBeenCalledWith('123');
+    expect(clipboardSpy.copy).toHaveBeenCalledWith('123');
+    expect(notificationSpy.show).toHaveBeenCalledWith('Order ID copied to clipboard');
   });
 
   it('should navigate to create schedule with orderId', () => {

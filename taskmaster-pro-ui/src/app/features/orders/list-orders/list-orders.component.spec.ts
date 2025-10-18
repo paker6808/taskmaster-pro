@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { ListOrdersComponent } from './list-orders.component';
 import { Router } from '@angular/router';
 import { ExportService } from '../../../shared/services/export.service';
@@ -23,12 +24,14 @@ describe('ListOrdersComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let dialogServiceSpy: jasmine.SpyObj<DialogService>;
+  let clipboardSpy: jasmine.SpyObj<Clipboard>;
 
   beforeEach(async () => {
     orderServiceSpy = jasmine.createSpyObj('OrderService', ['getPaged', 'delete']);
     notificationSpy = jasmine.createSpyObj('NotificationService', ['show']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     dialogServiceSpy = jasmine.createSpyObj('DialogService', ['confirm']);
+    clipboardSpy = jasmine.createSpyObj('Clipboard', ['copy']);
 
     // Default paged orders
     orderServiceSpy.getPaged.and.returnValue(of(pagedOrdersMock));
@@ -40,6 +43,7 @@ describe('ListOrdersComponent', () => {
         { provide: NotificationService, useValue: notificationSpy },
         { provide: Router, useValue: routerSpy },
         { provide: DialogService, useValue: dialogServiceSpy },
+        { provide: Clipboard, useValue: clipboardSpy },
         { provide: PAGE_SIZE_OPTIONS, useValue: DEFAULT_PAGE_SIZE_OPTIONS },
         { provide: ExportService, useClass: MockExportService }
       ]
@@ -70,9 +74,9 @@ describe('ListOrdersComponent', () => {
   });
 
   it('should copy order ID to clipboard', () => {
-    const writeSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
     component.copyId('123');
-    expect(writeSpy).toHaveBeenCalledWith('123');
+    expect(clipboardSpy.copy).toHaveBeenCalledWith('123');
+    expect(notificationSpy.show).toHaveBeenCalledWith('Order ID copied to clipboard');
   });
 
   it('should navigate to create schedule with orderId', () => {

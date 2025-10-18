@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../shared/modules/material.module';
 import { AdminService } from '../services/admin.service';
@@ -67,6 +68,7 @@ export class ListAllOrdersComponent implements OnInit {
     private notification: NotificationService,
     private dialogService: DialogService,
     private router: Router,
+    private clipboard: Clipboard,
     @Inject(PAGE_SIZE_OPTIONS) public pageSizeOptions: number[]
   ) {
     this.pageSize = DEFAULT_PAGE_SIZE;
@@ -161,11 +163,8 @@ export class ListAllOrdersComponent implements OnInit {
 
   /** Copy Order ID to clipboard */
   copyId(id: string): void {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(id).catch(() => {
-        console.warn('Clipboard write failed');
-      });
-    }
+    this.clipboard.copy(id);
+    this.notification.show('Order ID copied to clipboard');
   }
 
   /** Navigate to Create Schedule form prefilled with this Order ID */

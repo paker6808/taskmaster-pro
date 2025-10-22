@@ -338,6 +338,9 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
     this.selectedUser = user;
     this.assignedTo.setValue(user);
     this.validateAssignedTo(user);
+    this.assignedTo.markAsDirty();
+    this.assignedTo.markAsTouched();
+    this.assignedTo.updateValueAndValidity();
   }
 
   // Validate single Assigned To on-demand (called after paste or explicit action)

@@ -103,8 +103,6 @@ try
     })
     .AddJwtBearer(options =>
     {
-        var jwt = builder.Configuration.GetSection("JWTSettings");
-        var key = Encoding.UTF8.GetBytes(jwt["Key"]);
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,

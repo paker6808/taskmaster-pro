@@ -183,7 +183,7 @@ try
         };
     });
 
-    // ================== API DOCS (Swagger) + VERSIONING + CORS + HEALTH ==================
+    // ================== API DOCS (Swagger) + VERSIONING ==================
     builder.Services.AddApiVersioningExtension();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddVersionedApiExplorerExtension();
@@ -223,16 +223,17 @@ try
             }
         });
     });
-    
     builder.Services.AddMvcCore().AddApiExplorer();
+
+    // ================== CORS + HEALTH CHECKS ==================
+    var allowedOrigins = builder.Configuration
+        .GetSection("AllowedOrigins")
+        .Get<string[]>();
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowFrontend", policy =>
         {
-            policy.WithOrigins(
-                "https://taskmaster-pro.pages.dev", // production frontend
-                "http://localhost:4200" // development frontend
-                )
+            policy.WithOrigins(allowedOrigins)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

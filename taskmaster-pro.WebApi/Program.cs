@@ -227,7 +227,7 @@ try
 
     // ================== CORS + HEALTH CHECKS ==================
     var allowedOrigins = builder.Configuration
-        .GetSection("AllowedOrigins")
+        .GetSection("Frontend:AllowedOrigins")
         .Get<string[]>();
     builder.Services.AddCors(options =>
     {

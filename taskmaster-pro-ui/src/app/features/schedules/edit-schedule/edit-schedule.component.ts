@@ -50,7 +50,8 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
   // Clipboard support detection
   clipboardSupported = !!(navigator && (navigator as any).clipboard && (navigator as any).clipboard.readText && (navigator as any).clipboard.writeText);
 
-  // Info for selected user
+  // Cache for quick display lookup of users by ID
+  private userCache = new Map<string, UserDto>();
   selectedUser: UserDto | null = null;
 
   // Current user info
@@ -85,16 +86,16 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(val => {
-        const str = val?.toString().trim() || '';
+        const str = (val || '').toString().trim();
         if (str.length < this.searchMinLength) {
-          this.searchTooShortUser = true; // show warning in template
+          this.searchTooShortUser = true;
           return of([]);
-        } else {
-          this.searchTooShortUser = false;
-          return this.userService.searchUsers(str).pipe(
-            catchError(() => of([]))
-          );
         }
+        this.searchTooShortUser = false;
+        return this.userService.searchUsers(str).pipe(
+          tap(list => list.forEach(u => this.userCache.set(u.id, u))),
+          catchError(() => of([]))
+        );
       })
     );
 
@@ -121,14 +122,14 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
             ).subscribe(u => {
                 if (u) {
                   this.selectedUser = u;
-                  this.assignedTo.setValue(u, { emitEvent: false });
+                  this.assignedTo.setValue(u.id);
                   this.cdr.detectChanges();
                 }
               });
           } else {
             // assignedTo is object already
             this.selectedUser = schedule.assignedTo;
-            this.assignedTo.setValue(this.selectedUser, { emitEvent: false });
+            this.assignedTo.setValue(this.selectedUser.id);
             this.cdr.detectChanges();
           }
         }
@@ -145,24 +146,13 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
           catchError(() => of(null))
         ).subscribe(u => {
           if (u) {
+            this.userCache.set(u.id, u);
             this.selectedUser = u;
-            // Store object in control so displayWith can render friendly text
-            this.assignedTo.setValue(u, { emitEvent: false });
+            // set id silently and force change detection
+            this.assignedTo.setValue(u.id, { emitEvent: false });
             this.cdr.detectChanges();
-          } else {
-            // fallback to auth token data (if it contains name/email) so UI isn't empty
-            const cur = this.authService.getCurrentUser();
-            if (cur) {
-              this.selectedUser = {
-                id: cur.id ?? '',
-                email: (cur as any).email ?? '',
-                displayName: (cur as any).displayName ?? ''
-              } as UserDto;
-              this.assignedTo.setValue(this.selectedUser, { emitEvent: false });
-              this.cdr.detectChanges();
-            }
           }
-        })
+        });
       }
 
       // Prefill orderId from query param (if present)
@@ -319,28 +309,27 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
   }
 
   // Display helper for user autocomplete
-  displayUser(user: UserDto | string | null): string {
-    if (!user) return '';
-    if (typeof user === 'string') {
-      // If control holds an id, but selectedUser matches it, show friendly text
-      if (this.selectedUser && this.selectedUser.id === user) {
-        return `${this.selectedUser.email ?? ''} — ${this.selectedUser.fullName ?? ''}`.trim();
-      }
-      // Fallback: show the raw string (user typed an id)
-      return user;
-    }
-    // Object -> show email + name
-    return `${user.email ?? ''} - ${user.fullName ?? user.displayName ?? ''}`.trim();
+  displayUser(userId: string | null): string {
+    if (!userId) return '';
+    const u = this.userCache.get(userId) || (this.selectedUser && this.selectedUser.id === userId ? this.selectedUser : null);
+    if (!u) return '';
+    return `${u.email} - ${u.fullName || u.displayName || ''}`.trim();
   }
 
   // Called when the user selects an autocomplete option for Assigned To
-  onUserSelected(user: UserDto) {
-    this.selectedUser = user;
-    this.assignedTo.setValue(user);
-    this.validateAssignedTo(user);
-    this.assignedTo.markAsDirty();
-    this.assignedTo.markAsTouched();
-    this.assignedTo.updateValueAndValidity();
+  onUserSelected(userId: string) {
+    const user = this.userCache.get(userId);
+    if (user) {
+      this.selectedUser = user;
+      // set primitive ID in control, triggers valueChanges
+      this.assignedTo.setValue(user.id);
+      this.validateAssignedTo(user.id);
+    } else {
+      // fallback: control already has id, validate it
+      this.assignedTo.setValue(userId);
+      this.validateAssignedTo(userId);
+    }
+    this.cdr.detectChanges();
   }
 
   // Validate single Assigned To on-demand (called after paste or explicit action)

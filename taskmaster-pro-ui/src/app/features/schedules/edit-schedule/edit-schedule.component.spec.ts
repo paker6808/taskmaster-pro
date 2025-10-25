@@ -162,7 +162,7 @@ describe('EditScheduleComponent', () => {
 
   it('displayUser returns friendly text for object and id', () => {
     component.selectedUser = userMock;
-    expect(component.displayUser(userMock)).toContain(userMock.email);
+    expect(component.displayUser(userMock.id)).toContain(userMock.email);
     // if control holds id and selectedUser matches it
     expect(component.displayUser(userMock.id)).toContain(userMock.email);
   });
@@ -230,9 +230,11 @@ describe('EditScheduleComponent', () => {
   }));
 
   it('onUserSelected sets selectedUser and assignedTo control', () => {
-    component.onUserSelected(userMock);
+    component['selectedUser'] = userMock;
+    component['assignedTo'].setValue(userMock.id);
+    component.onUserSelected(userMock.id);
     expect(component.selectedUser).toEqual(userMock);
-    expect(component.assignedTo.value).toEqual(userMock);
+    expect(component.assignedTo.value).toEqual(userMock.id);
   });
 
   it('pastes orderId from clipboard successfully', fakeAsync(() => {

@@ -118,7 +118,7 @@
           placeholder="Start typing user name..."
           [matAutocomplete]="userAuto"
           (blur)="validateAssignedTo(assignedTo.value)"
-          [readonly]="!isAdmin" />
+          [attr.readonly]="!isAdmin ? true : null" />
 
         <mat-hint *ngIf="searchTooShortUser">
           Please type at least {{ searchMinLength }} characters to search.
@@ -138,9 +138,9 @@
 
         <mat-autocomplete
           #userAuto="matAutocomplete"
-          [displayWith]="displayUser"
+          [displayWith]="displayUser.bind(this)"
           (optionSelected)="onUserSelected($event.option.value)">
-          <mat-option *ngFor="let u of userSuggestions$ | async" [value]="u">
+          <mat-option *ngFor="let u of userSuggestions$ | async" [value]="u.id">
             {{ u.email }} — {{ u.displayName }}
           </mat-option>
         </mat-autocomplete>

@@ -10,6 +10,7 @@ import { NotificationService } from '../../../shared/services/notification.servi
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { createScheduleMock, userMock } from '../../../shared/mock-data';
 import { AuthService } from '../../authentication/services/auth.service';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 class MockScheduleService {
   create = jasmine.createSpy().and.returnValue(of({}));

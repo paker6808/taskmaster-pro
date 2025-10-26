@@ -1,11 +1,11 @@
 import { ChangeDetectorRef , Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, take, tap, finalize, takeUntil } from 'rxjs/operators'
 import { CommonModule } from '@angular/common';
 import { AbstractControl, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute  } from '@angular/router';
-import { MatAutocomplete } from '@angular/material/autocomplete';
 import { MaterialModule } from '../../../shared/modules/material.module';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { UpdateScheduleDto } from '../../../shared/models/schedule';
 import { UserDto } from '../../../shared/models/user.dto';
 import { AuthService } from '../../authentication/services/auth.service';
@@ -13,8 +13,6 @@ import { NotificationService } from '../../../shared/services/notification.servi
 import { OrderService } from '../../../core/services/order.service';
 import { ScheduleService } from '../../../core/services/schedule.service';
 import { UserService } from '../../users/user.service';
-import { Observable, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, take, tap, finalize } from 'rxjs/operators';
 import { toIsoMidnight } from '../../../shared/utils/date-utils';
 
 @Component({
@@ -23,7 +21,8 @@ import { toIsoMidnight } from '../../../shared/utils/date-utils';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MaterialModule
+    MaterialModule,
+    NgSelectModule
   ],
   templateUrl: './edit-schedule.component.html',
   styleUrls: ['./edit-schedule.component.scss']
@@ -33,11 +32,11 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   scheduleId!: string;
   private destroy$ = new Subject<void>();
-  @ViewChild('userAuto') userAuto!: MatAutocomplete;
 
-  // Typeahead
+  // Typeahead/observables
   orderSuggestions$: Observable<any[]> = of([]);
-  userSuggestions$: Observable<UserDto[]> = of([]);
+  userTypeahead$ = new Subject<string>();
+  userList: UserDto[] = [];
   validatingOrder = false;
   isOrderValid = false;
   validatingAssigned = false;
@@ -82,22 +81,51 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
       }, { validators: this.endAfterStartValidator(this.nextMidnight) });
 
     // Server-side autocomplete for users: debounce + minimum lengthes
-    this.userSuggestions$ = this.editForm.get('assignedTo')!.valueChanges.pipe(
+    // Server-side autocomplete for users: debounce + minimum length and update userList (subscribe so it actually runs)
+    this.userTypeahead$.pipe(
+      takeUntil(this.destroy$),
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(val => {
-        const str = (val || '').toString().trim();
+      switchMap(term => {
+        const str = (term || '').toString().trim();
         if (str.length < this.searchMinLength) {
           this.searchTooShortUser = true;
-          return of([]);
+          return of([] as UserDto[]);
         }
         this.searchTooShortUser = false;
         return this.userService.searchUsers(str).pipe(
-          tap(list => list.forEach(u => this.userCache.set(u.id, u))),
-          catchError(() => of([]))
+          catchError(() => of([] as UserDto[]))
         );
       })
-    );
+    ).subscribe(list => {
+      // cache returned users
+      list.forEach(u => this.userCache.set(u.id, u));
+
+      // merge selectedUser only when it matches typed input
+      const typed = this.assignedTo.value;
+      let merged = [...list];
+      if (this.selectedUser && typeof typed === 'string' &&
+          this.selectedUser.email.toLowerCase().includes(typed.toLowerCase())) {
+        merged.unshift(this.selectedUser);
+      }
+
+      // remove duplicates by id and update list shown by ng-select
+      this.userList = Array.from(new Map(merged.map(u => [u.id, u])).values());
+      this.cdr.detectChanges();
+    });
+
+    // watch control changes and push typed strings into the typeahead subject
+    this.assignedTo.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(v => {
+        if (typeof v === 'string') {
+          this.userTypeahead$.next(v);
+        } else if (v && typeof v === 'object' && (v as UserDto).id) {
+          // if the control contains a full user object (selected), cache it
+          const u = v as UserDto;
+          this.userCache.set(u.id, u);
+        }
+      });
 
     // Initialize Current User / Role
     this.authService.isAdmin$.pipe(
@@ -112,27 +140,48 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       ).subscribe(schedule => {
         this.editForm.patchValue(schedule);
-          if (schedule.assignedTo) {
-          if (typeof schedule.assignedTo === 'string') {
-            // assignedTo is an id — fetch user object for display
-            this.userService.getById(schedule.assignedTo).pipe(
-              takeUntil(this.destroy$),
-              catchError(()=>of(null)),
-              take(1)
-            ).subscribe(u => {
-                if (u) {
-                  this.selectedUser = u;
-                  this.assignedTo.setValue(u.id);
-                  this.cdr.detectChanges();
-                }
-              });
-          } else {
-            // assignedTo is object already
-            this.selectedUser = schedule.assignedTo;
-            this.assignedTo.setValue(this.selectedUser.id);
-            this.cdr.detectChanges();
-          }
+
+        // Normalize: get assigned id whether `assignedTo` is string or object
+        const assigned = schedule.assignedTo;
+        const assignedId = assigned
+          ? (typeof assigned === 'string' ? assigned : (assigned as UserDto).id)
+          : null;
+
+        if (!assignedId) {
+          return;
         }
+
+        // Fetch the full user object
+        this.userService.getById(assignedId).pipe(
+          take(1),
+          catchError(() => of(null))
+        ).subscribe(fullUser => {
+          console.log('EDIT: fetched fullUser for assignedId', assignedId, fullUser);
+
+          if (!fullUser) {
+            // Fallback - if API didn't return full user but schedule already had object
+            if (assigned && typeof assigned !== 'string') {
+              const partial = assigned as UserDto;
+              this.userCache.set(partial.id, partial);
+              if (!this.userList.some(u => u.id === partial.id)) this.userList.unshift(partial);
+              this.selectedUser = partial;
+              this.assignedTo.setValue(partial, { emitEvent: false });
+            }
+            this.cdr.detectChanges();
+            return;
+          }
+
+          // Put full user into cache and list *before* setting control value
+          this.userCache.set(fullUser.id, fullUser);
+          const idx = this.userList.findIndex(u => u.id === fullUser.id);
+          if (idx >= 0) this.userList[idx] = fullUser;
+          else this.userList.unshift(fullUser);
+
+          // Set control to the full object AFTER it's in userList/cache
+          this.assignedTo.setValue(fullUser, { emitEvent: false });
+          
+          this.cdr.detectChanges();
+        });
       });
 
       // Disable the assignedTo control for non-admin users
@@ -141,18 +190,19 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
 
       // If there is a currentUserId, fetch the user object and set selectedUser
       if (this.currentUserId) {
-        this.userService.getById(this.currentUserId).pipe(
-          takeUntil(this.destroy$),
-          catchError(() => of(null))
-        ).subscribe(u => {
-          if (u) {
-            this.userCache.set(u.id, u);
-            this.selectedUser = u;
-            // set id silently and force change detection
-            this.assignedTo.setValue(u.id, { emitEvent: false });
-            this.cdr.detectChanges();
-          }
-        });
+        if (!this.isAdmin && this.currentUserId && !this.assignedTo.value) {
+          this.userService.getById(this.currentUserId).pipe(
+            takeUntil(this.destroy$),
+            catchError(() => of(null))
+          ).subscribe(u => {
+            if (u) {
+              this.userCache.set(u.id, u);
+              this.selectedUser = u;
+              this.assignedTo.setValue(u, { emitEvent: false });
+              this.cdr.detectChanges();
+            }
+          });
+        }
       }
 
       // Prefill orderId from query param (if present)
@@ -161,25 +211,6 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
         this.orderId.setValue(q);
         this.validateOrderId(q);
       }
-
-      // Server-side autocomplete for orders: debounce + minimum length
-      this.orderSuggestions$ = this.orderId.valueChanges.pipe(
-        takeUntil(this.destroy$),
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap(val => {
-          const str = val?.toString().trim() || '';
-          if (str.length < this.searchMinLength) {
-            this.searchTooShortOrder = true; // show warning in template
-            return of([]);
-          } else {
-            this.searchTooShortOrder = false;
-            return this.orderService.searchOrders(str).pipe(
-              catchError(() => of([]))
-            );
-          }
-        })
-      );
 
       // Validate on pause/blur-ish behavior: when value stabilizes, check existence
       this.orderId.valueChanges.pipe(
@@ -309,26 +340,32 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
   }
 
   // Display helper for user autocomplete
-  displayUser(userId: string | null): string {
-    if (!userId) return '';
-    const u = this.userCache.get(userId) || (this.selectedUser && this.selectedUser.id === userId ? this.selectedUser : null);
-    if (!u) return '';
-    return `${u.email} - ${u.fullName || u.displayName || ''}`.trim();
+  displayUser(user: UserDto | string | null): string {
+    if (!user) return '';
+    let u: UserDto | undefined;
+    
+    if (typeof user === 'string') {
+        u = this.userCache.get(user);
+        if (!u) return user;
+    } else {
+        u = user;
+    }
+
+    const name = u.fullName?.trim();
+    return name ? `${u.email} - ${name}` : u.email;
   }
 
   // Called when the user selects an autocomplete option for Assigned To
-  onUserSelected(userId: string) {
-    const user = this.userCache.get(userId);
-    if (user) {
-      this.selectedUser = user;
-      // set primitive ID in control, triggers valueChanges
-      this.assignedTo.setValue(user.id);
-      this.validateAssignedTo(user.id);
-    } else {
-      // fallback: control already has id, validate it
-      this.assignedTo.setValue(userId);
-      this.validateAssignedTo(userId);
+  onUserSelected(selectedUser: UserDto | null) {
+    if (!selectedUser) return;
+
+    this.selectedUser = selectedUser;
+    if (!this.userList.find(u => u.id === selectedUser.id)) {
+      this.userList.unshift(selectedUser);
     }
+    this.assignedTo.setValue(selectedUser, { emitEvent: false });
+    this.validateAssignedTo(selectedUser);
+
     this.cdr.detectChanges();
   }
 

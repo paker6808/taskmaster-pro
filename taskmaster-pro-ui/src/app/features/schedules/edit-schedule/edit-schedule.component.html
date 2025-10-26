@@ -111,38 +111,51 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width">
+      <div class="form-field full-width">
         <mat-label>Assigned To</mat-label>
-        <input
-          matInput
+        <ng-select
           formControlName="assignedTo"
+          [items]="userList"
+          bindLabel="displayName"
+          [typeahead]="userTypeahead$"
+          [loading]="validatingAssigned"
+          [searchable]="true"
           placeholder="Start typing user name..."
-          [matAutocomplete]="userAuto"
+          [readonly]="!isAdmin"
+          (change)="onUserSelected($event)"
           (blur)="validateAssignedTo(assignedTo.value)"
-          [attr.readonly]="!isAdmin ? true : null" />
+          (search)="userTypeahead$.next($event.term)">
 
-        <mat-hint *ngIf="searchTooShortUser">
+          <!-- Option template: how each option is shown in dropdown -->
+          <ng-template ng-option-tmp let-item="item">
+            {{ item.email }}
+            <span *ngIf="item.fullName || item.displayName"> — {{ item.fullName || item.displayName }}</span>
+          </ng-template>
+
+          <!-- Label template: what is shown in the select input when an item is selected -->
+          <ng-template ng-label-tmp let-item="item">
+            {{ item.email }}
+            <span *ngIf="item.fullName || item.displayName"> — {{ item.fullName || item.displayName }}</span>
+          </ng-template>
+        </ng-select>
+
+        <small class="text-muted" *ngIf="searchTooShortUser && assignedTo.value?.length < searchMinLength">
           Please type at least {{ searchMinLength }} characters to search.
-        </mat-hint>
+        </small>
 
-        <mat-hint *ngIf="validatingAssigned">
+        <div class="validation" *ngIf="validatingAssigned">
           <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
           Checking user…
-        </mat-hint>
+        </div>
 
-        <mat-error *ngIf="!validatingAssigned && editForm.get('assignedTo')?.hasError('notFound')">
-          User not found
+        <mat-error *ngIf="assignedTo.hasError('required')">
+          User is required
         </mat-error>
 
-        <mat-autocomplete
-          #userAuto="matAutocomplete"
-          [displayWith]="displayUser.bind(this)"
-          (optionSelected)="onUserSelected($event.option.value)">
-          <mat-option *ngFor="let u of userSuggestions$ | async" [value]="u.id">
-            {{ u.email }} — {{ u.displayName }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+        <mat-error *ngIf="!validatingAssigned && assignedTo.hasError('notFound')">
+          User not found
+        </mat-error>
+      </div>
 
       <div class="form-actions">
         <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting || validatingAssigned">

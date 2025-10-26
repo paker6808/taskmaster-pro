@@ -232,9 +232,9 @@ describe('EditScheduleComponent', () => {
   it('onUserSelected sets selectedUser and assignedTo control', () => {
     component['selectedUser'] = userMock;
     component['assignedTo'].setValue(userMock.id);
-    component.onUserSelected(userMock.id);
+    component.onUserSelected(userMock);
     expect(component.selectedUser).toEqual(userMock);
-    expect(component.assignedTo.value).toEqual(userMock.id);
+    expect(component.assignedTo.value).toEqual(userMock);
   });
 
   it('pastes orderId from clipboard successfully', fakeAsync(() => {

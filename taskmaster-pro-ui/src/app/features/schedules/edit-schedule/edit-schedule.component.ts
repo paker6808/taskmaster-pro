@@ -363,7 +363,12 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
     if (!this.userList.find(u => u.id === selectedUser.id)) {
       this.userList.unshift(selectedUser);
     }
-    this.assignedTo.setValue(selectedUser, { emitEvent: false });
+
+    // Set the control value, mark as dirty/touched and validate
+    this.assignedTo.setValue(selectedUser);
+    this.assignedTo.markAsDirty();
+    this.assignedTo.markAsTouched();
+    this.assignedTo.updateValueAndValidity();
     this.validateAssignedTo(selectedUser);
 
     this.cdr.detectChanges();

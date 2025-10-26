@@ -98,6 +98,8 @@ describe('EditScheduleComponent', () => {
       scheduledEnd: new Date(updateScheduleMock.scheduledEnd),
       description: updateScheduleMock.description
     });
+    component.userList = [userMock];
+    component.assignedTo.setValue(userMock.id);
     component.submit();
     tick();
 
@@ -121,6 +123,8 @@ describe('EditScheduleComponent', () => {
     });
     
     component.editForm.patchValue(updateScheduleMock);
+    component.userList = [userMock];
+    component.assignedTo.setValue(userMock.id);
     component.submit();
     tick();
     
@@ -160,12 +164,21 @@ describe('EditScheduleComponent', () => {
     expect(dtoSent.assignedToId).toBe(userMock.id); // important: id not full object
   }));
 
-  it('displayUser returns friendly text for object and id', () => {
-    component.selectedUser = userMock;
-    expect(component.displayUser(userMock.id)).toContain(userMock.email);
-    // if control holds id and selectedUser matches it
-    expect(component.displayUser(userMock.id)).toContain(userMock.email);
-  });
+  it('displayUser returns friendly text for object and id', fakeAsync(() => {
+    const userSvc = TestBed.inject(UserService) as any;
+    userSvc.getById.and.returnValue(of(userMock));
+
+    // trigger the code that would populate userCache
+    component.onUserSelected(userMock);
+    tick();  // resolve any async
+
+    // now userCache contains the user, test displayUser with string
+    const result = component.displayUser(userMock.id);
+    expect(result).toContain(userMock.email);
+
+    // also test passing full object directly
+    expect(component.displayUser(userMock)).toContain(userMock.email);
+  }));
 
   it('validateOrderId sets notFound error when order does not exist', fakeAsync(() => {
     const orderSvc = TestBed.inject(OrderService) as jasmine.SpyObj<any>;
@@ -183,13 +196,11 @@ describe('EditScheduleComponent', () => {
     const userSvc = TestBed.inject(UserService) as any;
     userSvc.searchUsers.and.returnValue(of([ { id: 'u1' } ]));
 
-    const sub = component.userSuggestions$.subscribe();
-    component.assignedTo.setValue('alice');
+    component.userTypeahead$.next('alice');
     tick(300);
     fixture.detectChanges();
 
     expect(userSvc.searchUsers).toHaveBeenCalledWith('alice');
-    sub.unsubscribe();
   }));
 
   it('endAfterStartValidator sets and clears endBeforeStart error', () => {

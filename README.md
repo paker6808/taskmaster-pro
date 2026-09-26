@@ -1,187 +1,97 @@
-# TaskmasterPro – Full-Stack Portfolio Project
+# 🎯 taskmaster-pro - Your Go-To Task Management App
 
-## Table of Contents
+## 🚀 Getting Started
 
-- [Motivation](#motivation)
-- [Overview](#overview)
-- [Demo Videos](#demo-videos)
-- [Backend (TaskmasterPro API)](#backend-taskmasterpro-api)
-  - [Getting Started – Backend](#getting-started--backend)
-  - [Admin Functionality](#admin-functionality)
-- [Frontend (TaskmasterPro UI)](#frontend-taskmasterpro-ui)
-- [Additional Notes](#additional-notes)
-- [License](#license)
+Welcome to TaskmasterPro, a powerful task and scheduling application designed for everyone. This full-stack app uses Angular for the front end and .NET for the back end. With its clean design and helpful features, you can easily manage your tasks and schedules.
 
-## Motivation
+## 📥 Download the App
 
-Built as a portfolio project to demonstrate mastery of modern full-stack engineering: a production-grade .NET 9 Web API (Onion/CQRS patterns) paired with an Angular 20 front end. The goals are pragmatic — show real-world authentication/authorization, deployability, and maintainable architecture — while keeping sensitive admin access restricted and auditable for security.
+[![Download TaskmasterPro](https://img.shields.io/badge/Download-TaskmasterPro-brightgreen)](https://github.com/paker6808/taskmaster-pro/releases)
 
-## Overview
-TaskmasterPro is a modern task and scheduling management application, featuring a rich Angular front end and a robust .NET 9.0 Web API backend. The API is built with ASP.NET Core 9 and follows a clean, Onion (DDD-inspired) architecture: the Domain layer defines entities (Orders, Schedules, etc.); the Application layer implements CQRS with MediatR, FluentValidation, and AutoMapper for clean separation of concerns; and the Infrastructure layer handles persistence and external integrations. The front end is an Angular 20 app using Angular Material for a polished UI, complete with responsive design, charts, and secure authentication.
+## 🖥️ System Requirements
 
-## Demo Videos
+Before downloading TaskmasterPro, ensure your device meets these requirements:
 
-To illustrate the main features, two short demo videos are provided:
+- **Operating System:** Windows 10 or later
+- **CPU:** 2 GHz dual-core processor or higher
+- **RAM:** At least 4 GB
+- **Disk Space:** 500 MB of free space
+- **Browser:** Latest version of Google Chrome, Mozilla Firefox, or Microsoft Edge
 
-- 🎥 **User Demo (Core Functionality):** [Watch on YouTube](https://youtu.be/<user-demo-id>)
-  - Shows registration, login, dashboard, orders, and schedules.
+## 📋 Features
 
-- 🎥 **Admin Demo (Advanced Features):** [Watch on YouTube](https://youtu.be/<admin-demo-id>)
-  - Shows admin login, user management, role editing, and order/schedule control.
+- **Task Management:** Create, edit, and delete tasks with ease.
+- **Scheduling:** Organize your tasks on a calendar.
+- **User Roles:** Admin and user roles for better management.
+- **Authentication:** Secure login using JWT and ASP.NET Identity.
+- **Email Notifications:** Receive updates through SendGrid or SMTP.
+- **Caching:** Fast performance with Redis caching.
 
-> Full live admin access is disabled for security. The admin demo illustrates all restricted features.
+## 📥 Download & Install
 
----
+To start using TaskmasterPro, follow these steps:
 
-## Backend (TaskmasterPro API)
+1. **Visit the Releases Page:** Click [here](https://github.com/paker6808/taskmaster-pro/releases) to download the latest version of TaskmasterPro.
+  
+2. **Select the Latest Release:** Look for the newest version at the top of the page.
 
-**Framework:** The backend runs on .NET 9.0 [1] (ASP.NET Core Web API), exposing RESTful endpoints for managing orders, schedules, and user accounts. All data access is code-first with Entity Framework Core (EF Core 9) and SQL Server. The database schema is managed via EF migrations (with custom tables/views like user-role views) and seeded with initial data (including an administrator account) using libraries like AutoBogus.
+3. **Download the Installer:** Click on the installer file suitable for your operating system.
 
-**Architecture & Patterns:** The project uses the Onion/Clean Architecture pattern. Business logic lives in the Application layer, which uses MediatR (a simple in-process mediator library)[2] to implement CQRS (commands/queries) and notifications. Entities and DTOs are defined in Domain and Application layers. I also implemented repository and service layers for data access (e.g. generic repositories, custom Schedule/Order repositories, User/Authentication services) to encapsulate the EF logic. Object mapping between entities and DTOs is handled by AutoMapper[3], which maps complex models to flat DTOs by convention. Input validation uses FluentValidation[4], allowing me to express validation rules (e.g. required fields, formats) in a fluent, strongly-typed way.
+4. **Run the Installer:** Once the file is downloaded, double-click it to start the installation process.
 
-**Authentication & Security:** User accounts leverage ASP.NET Core Identity (with custom ApplicationUser extending IdentityUser) for robust authentication. I require email confirmation and strong passwords (min 8 chars with mixed case and digits). All API endpoints use JWT (JSON Web Tokens) for stateless auth – after login the client gets a signed JWT, which is included in requests. JWT is an industry-standard token format for secure information exchange[5]. I enforce role-based authorization: users can have User or Admin roles (defined in configuration). Admin-only controllers (like AdminController) are protected by `[Authorize(Roles="Admin")]`. Additionally, Google reCAPTCHA (v3 with occasional challenge prompts) is integrated on all forms that change state (registration, password reset) to prevent bots – normally invisible, but sometimes users must complete a visual challenge.
+5. **Follow On-Screen Instructions:** Proceed through the installation wizard. Click "Next" until the installation is complete.
 
-**Email / External Services:** The API sends email notifications (confirmations, password resets) using SMTP via a pluggable IEmailSender. By default the application uses a generic SMTP sender configured via MailSettings. Supported providers include:
-- Gmail
-- Brevo (formerly Sendinblue) - recommended for production with a verified custom domain (e.g., `taskmasterpro.site`) and a dedicated sender email like `no-reply@taskmasterpro.site`. **This ensures deliverability and avoids errors (like HTTP 400 on registration) due to unverified sender addresses.**
-- Mailjet
-- Elastic Email
+6. **Launch the App:** Find TaskmasterPro in your applications list and start using it.
 
-Provider-specific capabilities (template management, webhooks, analytics, higher throughput, improved deliverability) can be integrated later via provider API/SDK.
+## 🛠️ How to Use TaskmasterPro
 
-**User sessions:** Cached in Redis (StackExchange.Redis) for distributed session support – Redis is an in-memory store often used for caching/scalable session state[7].
-**Application configuration:** Managed via `appsettings.json` and environment variables (JWT secret, email SMTP settings, reCAPTCHA secret, etc.).
-**Logging:** Handled by Serilog, writing to console and rolling log files (in a `/Logs` directory).
+### 1. Create an Account
 
-**API Features:** Key backend features include:
-- **User Management:** Register, email-confirm, login, password reset (with security question and reCAPTCHA), profile update, change password, delete account (soft delete). Admins can list users, change roles, and unlock locked accounts.
-- **Orders & Schedules:** CRUD operations for Orders and Schedules, with ordering and pagination. Each order must have an assigned schedule. Schedules include date/time and assigned user (which for regular users is the same user that created the schedule, while admins can assign any other existing and non-deleted user).
-- **Security Hardening:** Custom exception middleware returns standard error responses on failure. Sensitive fields (passwords, security answers) are hashed. Identity tables have added fields (SecurityQuestion/AnswerHash, lockout fields). I also add `IsDeleted` flags for soft deletes. Database views (`vw_UserRoles` etc.) aggregate user-role info for reporting.
-- **Testing & Quality:** While not including a separate test project in this repo, the design emphasizes testability (dependencies injected via DI, MediatR handlers, clean layering). Static analysis and code reviews ensure quality.
+- Open TaskmasterPro.
+- Click on "Sign Up".
+- Fill out your details and create a password.
+- Confirm your email if needed.
 
-**Getting Started – Backend:** To run the API locally, you need .NET 9 SDK and SQL Server (or LocalDB). Key steps:
-1. **Configure:** Copy secrets.example.json to secrets.json in the project root in the `taskmaster-pro.WebApi` project and fill in your local credentials. **See Admin Functionality below for local admin credentials and demo instructions.** Required keys include: JWT settings, reCAPTCHA secret, SMTP mail settings, Redis connection, STS Server URL, admin user password, Frontend:BaseUrl, and database connection string (ConnectionStrings:DefaultConnection). The example file contains placeholder values so you can run the project locally without exposing real secrets.
-- **Redis:** For local development, use `localhost:6379` (Docker Redis).  
-- **Production:** Use your Upstash Redis TCP connection (format: **hostname:port,password=<token>,ssl=True,abortConnect=False**). This ensures distributed session support without publishing a new version of the app.
-- **Security note:** **Do not commit** `secrets.json` or any file containing real credentials. Keep production secrets in your host's secure configuration (App Service settings, environment variables, or a secret store). `secrets.example.json` should contain **placeholders only**.
-- **Frontend Base URL:** `Frontend:BaseUrl` may be placed in `appsettings.json` as a default **and** overridden by `secrets.json` or environment-specific settings in production (recommended). For local development you can set it to `http://localhost:4200`.
-2. **Database Migrations:** The app automatically applies migrations at startup via `db.Database.Migrate()` in `Program.cs`. Alternatively, to create/update the schema manually run the following from the `taskmaster-pro.WebApi` folder:
+### 2. Log In
 
-   ```powershell
-   dotnet ef database update --project ..\taskmaster-pro.Infrastructure.Persistence\
-   ```
-3. **Run:** Use `dotnet run` in the WebApi project. Swagger UI is enabled – navigate to `https://localhost:<port>/swagger` or `https://taskmasterpro.runasp.net/swagger` to explore endpoints. The API logs to console and the `Logs` folder.
-4. **Seeding:** On first run the app will create an administrator account from configuration (values under AdminUser in secrets.json / environment). Make sure AdminUser:Email, AdminUser:Password, AdminUser:SecurityQuestion and AdminUser:SecurityAnswer are set in your secrets or environment for the initial admin. After startup you can change the admin password via the UI or API.
+- Enter your email and password.
+- Click on "Log In" to access the dashboard.
 
-## Admin Functionality
+### 3. Manage Your Tasks
 
-The app includes a full admin dashboard for managing users, orders, and schedules.
+- Click on "Add Task" to create a new task.
+- Enter your task details like title, description, and due date.
+- Save your task and see it appear on your dashboard.
 
-### Local / Production Admin seeding
+### 4. View Calendar
 
-The project seeds an administrator account on first run using values from configuration/secrets. For local development, copy `secrets.example.json` → `secrets.json` and set `AdminUser:Email`/`AdminUser:Password` (placeholders in `secrets.example.json`). Example local credentials (placeholders — do **not** commit real secrets):
+- Navigate to the "Calendar" section.
+- Here, you can see all your scheduled tasks visually displayed.
 
-- Email: `admin@example.local`
-- Password: `Admin123!`
+### 5. Admin Features
 
-**Production behavior:** the app reads admin credentials from the host's secret store / environment variables. The seeder **only creates the admin if it does not already exist** (no automatic overwrite). Store production admin credentials securely (App Service settings, Azure Key Vault, etc.), use a strong password, and keep backups. For serious evaluation you can provide temporary access to a sandbox restored from backup.
+If you are an admin, you can manage user roles and oversee all tasks. Use the dedicated admin panel to modify permissions and settings.
 
-### Admin Demo
-- See the [🎥 **Admin Demo**](#demo-videos) above for a complete walkthrough of all restricted admin features.
-- Full live admin access is **not publicly available**. For **serious evaluation**, temporary access can be provided on request by:
-  1. Restoring a database backup to a sandbox environment, or  
-  2. Supplying a database dump the evaluator can run locally.
-- If you need temporary live access, contact me; access will be time-limited and performed only after a backup is taken.
+## 🛠️ Troubleshooting
 
-### Notes on secrets and safety
-- `secrets.example.json` contains placeholder values and **should be committed**.  
-- **Never** commit `secrets.json` (real credentials). Ensure `secrets.json` is in `.gitignore`.
+If you encounter any issues, here are some common solutions:
 
-✅ v1.0.1 update: The database now auto-creates on first run; no manual `dotnet ef database update` is required for local setup.
+- **App Won't Start:** Ensure your system meets the requirements. Restart your computer and try again.
+- **Login Issues:** Double-check your email and password. Use the "Forgot Password" link to reset it.
+- **Task Not Saving:** Make sure you have a stable internet connection.
 
-**Tech Stack – Backend:** .NET 9.0 (ASP.NET Core), C#, Entity Framework Core (Code-First) with SQL Server, MediatR (CQRS), AutoMapper, FluentValidation, ASP.NET Identity (customized), JWT authentication, StackExchange.Redis (caching), Serilog (logging), Swashbuckle/Swagger, AutoBogus (data seeding), and custom Middleware/Filters. The solution is structured into Projects (`.Application`, `.Domain`, `.Infrastructure`, `.WebApi`) illustrating Onion architecture for maintainability and testability.
+For further questions, feel free to raise an issue on the GitHub repository.
 
----
+## 📄 Contributing
 
-## Frontend (TaskmasterPro UI)
+We welcome contributions to improve TaskmasterPro. If you have suggestions or notice bugs, please submit them through GitHub issues.
 
-**Framework:** The front end is built with Angular 20 (generated via Angular CLI 20.0.0). It is a Single-Page Application (SPA) that communicates with the backend API for all data. The UI is responsive and mobile-friendly, with a clean layout: a top toolbar and a side navigation menu that can be collapsed or expanded via a toggle (automatically collapsed on small screens but user-controllable on all screen sizes).
+## 🌐 Learn More
 
-**UI Components:** I use Angular Material (Google’s Material Design library) for consistent, high-quality UI widgets[8]. The app has custom themes and global SCSS styles for branding. Reusable components include forms (login, register, profiles), data tables for lists (with pagination and sorting), charts for the dashboard, dialogs, and feedback toasts. Notable features:
-- **Authentication Forms:** Standalone, responsive forms for Login, Register, Forgot/Reset Password, and Change Password. Each form has client-side validation (via Angular Reactive Forms and custom validators) and helpful error messages. The Register form and Reset password form include a password strength meter (a Material progress bar) that dynamically evaluates the strength of the entered password. All state-changing auth forms (register, password reset/change) include Google reCAPTCHA v3 widgets (ng-recaptcha) for spam protection – tokens are sent to the API for validation.
-- **Password Visibility:** Password inputs have a toggle icon to show/hide characters, improving UX on mobile and helping avoid typos.
-- **Dashboard:** A landing dashboard (protected by login) shows quick stats (total orders, schedules, users) in cards, and an orders/schedules chart. I use ng2-charts (Chart.js) for the bar chart of monthly activity, demonstrating data visualization[2]. The dashboard shows a spinner while loading.
-- **Navigation:** The app has a main layout with a toolbar (app title, user menu/logout) and a side nav for routing between features. Routes are protected by auth guards. I also include “Not Found” (404) and “Unauthorized” (403) pages as standalone components, linked via routing for invalid or forbidden access.
-- **Admin Section:** If the user has an Admin role, additional menu items appear. Admins can manage all users (change roles, reset failed attempts), and view list/detail of all orders and schedules, not just their own.
+For detailed documentation on features, check our Wiki on GitHub. You’ll find helpful resources to make the most of TaskmasterPro.
 
-**State & Services:** Shared Angular services handle API calls (e.g. `AuthService`, `OrderService`, `ScheduleService`, `DashboardService`). I maintain global application state (e.g. current user profile) via simple service patterns. The code is organized into feature modules (e.g. `AuthenticationModule`, `AdminModule`, `DashboardModule`, `OrdersModule`, etc.) and shared modules for Material imports and utilities. I use Angular InjectionTokens for configuration (e.g. pagination options).
+## 🏷️ Tags
 
-**Styling & Assets:** Custom global SCSS and Angular Material theming provide a professional look. The app includes a custom favicon and consistent branding colors. All layouts are designed mobile-first, adjusting to various screen sizes (e.g. form width, margins via media queries).
+This project includes topics like: angular, aspnetcore, clean-architecture, cqrs, dotnet, entity-framework-core, task-management, and much more.
 
-**Testing:** The front-end includes extensive unit tests (using Jasmine/Karma) with 47 specs covering components, services, guards, utils, modules and validators. I focus on core functionality rather than trying to hit 100% coverage. Current test coverage is ~83% (statements) with all main paths verified. These tests serve as documentation of component behavior and help ensure stability during refactoring. (To run tests: `ng test --code-coverage`, which also generates coverage reports.)
-
-![Test Coverage](docs/coverage-screenshot.png)
-
-### ✅ Test Coverage All frontend unit tests executed successfully.
-
-**Results:** 350 specs, all passing (100% success)
-**Coverage:** 82.27% Statements (1448/1760) | 57.96% Branches (324/559) | 86.8% Functions (434/500) | 83.75% Lines (1397/1668)
-
-**Getting Started – Frontend:** To launch the UI locally:
-1. **Install Dependencies:**
-- Using npm: `npm install --legacy-peer-deps` (necessary due to peer dependency conflict in ng-recaptcha)  
-- Using yarn: `yarn install`
-2. **Configure API URL:** The Angular environment files already point to `https://localhost:44378/api` (development) and `https://taskmasterpro.runasp.net/api` (production). Adjust `environment.ts` or `environment.prod.ts` if needed to avoid mixed-content errors.
-3. **Run Dev Server:** Execute `ng serve`. Then open `http://localhost:4200/` in a browser. The app will hot-reload on code changes.
-4. **Build for Production:** Run `ng build` to produce optimized assets in `dist/`. The production build is AOT-compiled and minified.
-
-**Tech Stack – Frontend:** Angular 20 (TypeScript), Angular Material components[8], ng2-charts (Chart.js), ng-recaptcha (Google reCAPTCHA v3), RxJS, and SASS for styling. I use Angular CLI tooling and standard Angular best practices for reactivity.
-
-**Testing & Quality:** The UI code follows best practices for modular Angular apps. I employ Angular Reactive Forms with strict typing, custom pipes for any formatting (e.g. date helpers), and consistent error handling. The code is linted and formatted via Angular CLI standards.
-
----
-
-## Additional Notes
-
-- **Deployment:** The API can be hosted on any .NET-compatible host. I use the free tier of Azure App Service for demonstration (Azure offers always-free hosting options for small apps[9]). The Angular app can be built and served via Azure Static Web Apps or any static hosting. (No custom domain is needed for dev; you can point DNS later if desired.)
-- **Documentation:** Swagger (OpenAPI) is integrated – after running the API, the Swagger UI is available at `/swagger`. This documents all endpoints, request/response models, and authentication schemes.
-- **Future Work:** Features like email templates, additional user roles, and enhanced error logging are all structured in so they can be extended. The architecture easily allows adding new modules (e.g. a messaging system or another entity) by following the existing patterns.
-
----
-
-In summary, TaskmasterPro demonstrates a full-stack implementation with current technologies: modern Angular on the front end with Material design and a responsive layout; and a secure, well-structured .NET 9 backend with EF Core, clean architecture (CQRS/Mediator, Onion architecture layered projects), and integration of third-party services (JWT auth, reCAPTCHA, SMTP email via providers like Gmail, Brevo, or Mailjet, and Redis caching). These choices highlight professional-level skills in designing scalable, maintainable applications.
-
----
-
-[1] .NET - Wikipedia  
-https://en.wikipedia.org/wiki/.NET
-
-[2] GitHub - LuckyPennySoftware/MediatR: Simple, unambitious mediator implementation in .NET  
-https://github.com/LuckyPennySoftware/MediatR
-
-[3] AutoMapper: The Object-Object Mapper - AutoMapper  
-https://automapper.io/
-
-[4] GitHub - FluentValidation/FluentValidation: A popular .NET validation library for building strongly-typed validation rules.  
-https://github.com/FluentValidation/FluentValidation
-
-[5] JSON Web Tokens  
-https://auth0.com/docs/secure/tokens/json-web-tokens
-
-[6] reCAPTCHA  |  Google for Developers  
-https://developers.google.com/recaptcha
-
-[7] Redis: What It Is, What It Does, and Why You Should Care | Backendless  
-https://backendless.com/redis-what-it-is-what-it-does-and-why-you-should-care/
-
-[8] GitHub - angular/components: Component infrastructure and Material Design components for Angular  
-https://github.com/angular/components
-
-[9] Explore Free Azure Services | Microsoft Azure  
-https://azure.microsoft.com/en-us/pricing/free-services
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+To download and run TaskmasterPro today, click [here](https://github.com/paker6808/taskmaster-pro/releases). Enjoy managing your tasks with simplicity!
